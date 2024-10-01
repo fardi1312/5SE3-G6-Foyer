@@ -1,0 +1,26 @@
+# Ignore le dossier de compilation
+/target/
+
+# Ignore les fichiers de configuration de l'environnement
+*.log
+*.env
+
+# Ignore les fichiers de dépendances de l'IDE
+.vscode/
+.idea/
+*.iml
+
+# Ignore les fichiers de sauvegarde et temporaires
+*~
+*.tmp
+*.bak
+
+# Ignore les fichiers de compilations générés
+*.class
+*.jar
+*.war
+*.zip
+
+# Ignore les fichiers du système d'exploitation
+.DS_Store
+Thumbs.db
