@@ -14,37 +14,37 @@ public class BlocRestController {
     IBlocService service;
 
     @PostMapping("addOrUpdate")
-    Bloc addOrUpdate(@RequestBody Bloc b) {
+    public Bloc addOrUpdate(@RequestBody Bloc b) {
         return service.addOrUpdate(b);
     }
 
     @GetMapping("findAll")
-    List<Bloc> findAll() {
+    public List<Bloc> findAll() {
         return service.findAll();
     }
 
     @GetMapping("findById")
-    Bloc findById(@RequestParam long id) {
+    public Bloc findById(@RequestParam long id) {
         return service.findById(id);
     }
 
     @DeleteMapping("delete")
-    void delete(@RequestBody Bloc b) {
+    public void delete(@RequestBody Bloc b) {
         service.delete(b);
     }
 
     @DeleteMapping("deleteById")
-    void deleteById(@RequestParam long id) {
+    public void deleteById(@RequestParam long id) {
         service.deleteById(id);
     }
 
     @PutMapping("affecterChambresABloc")
-    Bloc affecterChambresABloc(@RequestBody List<Long> numChambre, @RequestParam String nomBloc) {
+    public Bloc affecterChambresABloc(@RequestBody List<Long> numChambre, @RequestParam String nomBloc) {
         return service.affecterChambresABloc(numChambre, nomBloc);
     }
 
     @PutMapping("affecterBlocAFoyer")
-    Bloc affecterBlocAFoyer(@RequestParam String nomBloc,@RequestParam String nomFoyer){
+    public Bloc affecterBlocAFoyer(@RequestParam String nomBloc,@RequestParam String nomFoyer){
         return service.affecterBlocAFoyer(nomBloc,nomFoyer);
     }
 }
