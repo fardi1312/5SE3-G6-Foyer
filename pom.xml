@@ -63,5 +63,15 @@
             </plugin>
         </plugins>
     </build>
-
+         
+    <distributionManagement>
+        <repository>
+            <id>deploymentRepo</id>
+            <url>http://192.168.33.10:8081/repository/maven-releases/</url>
+        </repository>
+        <snapshotRepository>
+            <id>snapshotRepo</id>
+            <url>http://192.168.33.10:8081/repository/maven-snapshots/</url> <!-- Add this if you want to deploy snapshots -->
+        </snapshotRepository>
+    </distributionManagement>
 </project>
