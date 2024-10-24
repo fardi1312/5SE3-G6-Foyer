@@ -1,15 +1,14 @@
 package tn.esprit.spring.Services.Reservation;
 
+import jakarta.persistence.EntityNotFoundException;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import tn.esprit.spring.DAO.Entities.Chambre;
 import tn.esprit.spring.DAO.Entities.Etudiant;
-import tn.esprit.spring.DAO.Entities.Foyer;
 import tn.esprit.spring.DAO.Entities.Reservation;
 import tn.esprit.spring.DAO.Repositories.ChambreRepository;
 import tn.esprit.spring.DAO.Repositories.EtudiantRepository;
-import tn.esprit.spring.DAO.Repositories.FoyerRepository;
 import tn.esprit.spring.DAO.Repositories.ReservationRepository;
 
 import java.time.LocalDate;
@@ -22,6 +21,7 @@ public class ReservationService implements IReservationService {
     ReservationRepository repo;
     ChambreRepository chambreRepository;
     EtudiantRepository etudiantRepository;
+    private static final String RESERVATION_NOT_FOUND_MESSAGE = "Reservation with id %s not found";
 
     @Override
     public Reservation addOrUpdate(Reservation r) {
@@ -33,9 +33,11 @@ public class ReservationService implements IReservationService {
         return repo.findAll();
     }
 
+
     @Override
     public Reservation findById(String id) {
-        return repo.findById(id).get();
+        return repo.findById(id)
+                .orElseThrow(() -> new EntityNotFoundException(String.format(RESERVATION_NOT_FOUND_MESSAGE, id)));
     }
 
     @Override
@@ -50,13 +52,9 @@ public class ReservationService implements IReservationService {
 
     @Override
     public Reservation ajouterReservationEtAssignerAChambreEtAEtudiant(Long numChambre, long cin) {
-        // Pour l’ajout de Réservation, l’id est un String et c’est la concaténation de "numeroChambre",
-        // "nomBloc" et "cin". Aussi, l’ajout ne se fait que si la capacite maximale de la chambre est encore non atteinte.
-
-        // Début "récuperer l'année universitaire actuelle"
+        // Récupération de l'année universitaire actuelle
         LocalDate dateDebutAU;
         LocalDate dateFinAU;
-        int numReservation;
         int year = LocalDate.now().getYear() % 100;
         if (LocalDate.now().getMonthValue() <= 7) {
             dateDebutAU = LocalDate.of(Integer.parseInt("20" + (year - 1)), 9, 15);
@@ -65,14 +63,18 @@ public class ReservationService implements IReservationService {
             dateDebutAU = LocalDate.of(Integer.parseInt("20" + year), 9, 15);
             dateFinAU = LocalDate.of(Integer.parseInt("20" + (year + 1)), 6, 30);
         }
-        // Fin "récuperer l'année universitaire actuelle"
+
+        // Initialiser la réservation
         Reservation res = new Reservation();
         Chambre c = chambreRepository.findByNumeroChambre(numChambre);
         Etudiant e = etudiantRepository.findByCin(cin);
         boolean ajout = false;
+
+        // Nombre de réservations dans cette chambre durant l'année universitaire en cours
         int numRes = chambreRepository.countReservationsByIdChambreAndReservationsAnneeUniversitaireBetween(c.getIdChambre(), dateDebutAU, dateFinAU);
-        //int numRes = chambreRepository.listerReservationPourUneChambre(c.getIdChambre(), dateDebutAU, dateFinAU);
-        System.err.println(numRes);
+        log.debug("Nombre de réservations pour la chambre {}: {}", c.getNumeroChambre(), numRes);  // Logging the number of reservations
+
+        // Vérifier si la chambre peut accepter de nouvelles réservations en fonction du type
         switch (c.getTypeC()) {
             case SIMPLE:
                 if (numRes < 1) {
@@ -96,18 +98,24 @@ public class ReservationService implements IReservationService {
                 }
                 break;
         }
+
+        // Ajouter la réservation si la capacité n'est pas atteinte
         if (ajout) {
-            res.setEstValide(false);
+            res.setEstValide(false);  // La réservation est non validée au départ
             res.setAnneeUniversitaire(LocalDate.now());
-            // AU-BLOC-NumChambre-CIN --> Exemple: 2023/2024-Bloc A-1-123456789
-            //res.setIdReservation(c.getNumeroChambre() + "-" + c.getBloc().getNomBloc() + "-" + e.getCin());
             res.setIdReservation(dateDebutAU.getYear() + "/" + dateFinAU.getYear() + "-" + c.getBloc().getNomBloc() + "-" + c.getNumeroChambre() + "-" + e.getCin());
-            res.getEtudiants().add(e);
-            res.setEstValide(true);
+            res.getEtudiants().add(e);  // Assigner l'étudiant
+            res.setEstValide(true);  // Valider la réservation
+
+            // Sauvegarder la réservation et mettre à jour la chambre
             res = repo.save(res);
             c.getReservations().add(res);
             chambreRepository.save(c);
+            log.info("Réservation ajoutée avec succès pour la chambre {} et l'étudiant {}.", c.getNumeroChambre(), e.getCin());
+        } else {
+            log.warn("Aucune réservation n'a été ajoutée pour la chambre {}.", c.getNumeroChambre());
         }
+
         return res;
     }
 
@@ -126,36 +134,7 @@ public class ReservationService implements IReservationService {
         return "La réservation " + r.getIdReservation() + " est annulée avec succés";
     }
 
-    @Override
-    public void affectReservationAChambre(String idRes, long idChambre) {
-        Reservation r = repo.findById(idRes).get();
-        Chambre c = chambreRepository.findById(idChambre).get();
-        // Parent: Chambre , Child: Reservation
-        // On affecte le child au parent
-        c.getReservations().add(r);
-        chambreRepository.save(c);
-    }
 
-    @Override
-    public void annulerReservations() {
-        // Début "récuperer l'année universitaire actuelle"
-        LocalDate dateDebutAU;
-        LocalDate dateFinAU;
-        int numReservation;
-        int year = LocalDate.now().getYear() % 100;
-        if (LocalDate.now().getMonthValue() <= 7) {
-            dateDebutAU = LocalDate.of(Integer.parseInt("20" + (year - 1)), 9, 15);
-            dateFinAU = LocalDate.of(Integer.parseInt("20" + year), 6, 30);
-        } else {
-            dateDebutAU = LocalDate.of(Integer.parseInt("20" + year), 9, 15);
-            dateFinAU = LocalDate.of(Integer.parseInt("20" + (year + 1)), 6, 30);
-        }
-        // Fin "récuperer l'année universitaire actuelle"
-        for (Reservation reservation : repo.findByEstValideAndAnneeUniversitaireBetween(true, dateDebutAU, dateFinAU)) {
-            reservation.setEstValide(false);
-            repo.save(reservation);
-            log.info("La reservation "+ reservation.getIdReservation()+" est annulée automatiquement");
-        }
-    }
+
 
 }

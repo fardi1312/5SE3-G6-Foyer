@@ -14,9 +14,6 @@ public interface IChambreService {
     List<Chambre>  getChambresParNomBloc( String nomBloc);
     long  nbChambreParTypeEtBloc(TypeChambre type, long idBloc);
     List<Chambre>  getChambresNonReserveParNomFoyerEtTypeChambre( String nomFoyer,TypeChambre type);
-    void listeChambresParBloc();
-    void pourcentageChambreParTypeChambre();
-    void nbPlacesDisponibleParChambreAnneeEnCours();
 
 
 

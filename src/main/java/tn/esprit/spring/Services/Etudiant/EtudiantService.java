@@ -1,5 +1,6 @@
 package tn.esprit.spring.Services.Etudiant;
 
+import jakarta.persistence.EntityNotFoundException;
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
 import tn.esprit.spring.DAO.Entities.Etudiant;
@@ -24,7 +25,7 @@ public class EtudiantService implements IEtudiantService {
 
     @Override
     public Etudiant findById(long id) {
-        return repo.findById(id).get();
+        return repo.findById(id).orElseThrow(() -> new EntityNotFoundException("Etudiant with id " + id + " not found"));
     }
 
     @Override

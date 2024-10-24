@@ -1,5 +1,6 @@
 package tn.esprit.spring.Services.Bloc;
 
+import jakarta.persistence.EntityNotFoundException;
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
 import tn.esprit.spring.DAO.Entities.Bloc;
@@ -20,15 +21,7 @@ public class BlocService implements IBlocService {
     BlocRepository blocRepository;
     FoyerRepository foyerRepository;
 
-    @Override
-    public Bloc addOrUpdate2(Bloc b) { //Cascade
-        List<Chambre> chambres= b.getChambres();
-        for (Chambre c: chambres) {
-            c.setBloc(b);
-            chambreRepository.save(c);
-        }
-        return b;
-    }
+
 
     @Override
     public Bloc addOrUpdate(Bloc b) {
@@ -48,8 +41,9 @@ public class BlocService implements IBlocService {
 
     @Override
     public Bloc findById(long id) {
-        return repo.findById(id).get();
+        return repo.findById(id).orElseThrow(() -> new EntityNotFoundException("Bloc with id " + id + " not found"));
     }
+
 
     @Override
     public void deleteById(long id) {
@@ -58,29 +52,29 @@ public class BlocService implements IBlocService {
 
     @Override
     public void delete(Bloc b) {
-        List<Chambre> chambres= b.getChambres();
-        for (Chambre chambre: chambres) {
-            chambreRepository.delete(chambre);
+        List<Chambre> chambres = b.getChambres();
+
+        // Bulk delete all chambres associated with the bloc
+        if (!chambres.isEmpty()) {
+            chambreRepository.deleteAll(chambres);
         }
+
+        // Then delete the Bloc itself
         repo.delete(b);
     }
+
 
     @Override
     public Bloc affecterChambresABloc(List<Long> numChambre, String nomBloc) {
         //1
         Bloc b = repo.findByNomBloc(nomBloc);
-        List<Chambre> chambres= new ArrayList<>();
+        List<Chambre> chambers= new ArrayList<>();
         for (Long nu: numChambre) {
             Chambre chambre=chambreRepository.findByNumeroChambre(nu);
-            chambres.add(chambre);
+            chambers.add(chambre);
         }
-        // Keyword (2ème méthode)
-        //chambres=chambreRepository.findAllByNumeroChambre(numChambre);
-        //2 Parent==>Chambre  Child==> Bloc
-        for (Chambre cha : chambres) {
-            //3 On affecte le child au parent
+        for (Chambre cha : chambers) {
                 cha.setBloc(b);
-            //4 save du parent
                 chambreRepository.save(cha);
         }
         return b;
@@ -90,7 +84,6 @@ public class BlocService implements IBlocService {
     public Bloc affecterBlocAFoyer(String nomBloc, String nomFoyer) {
         Bloc b = blocRepository.findByNomBloc(nomBloc); //Parent
         Foyer f = foyerRepository.findByNomFoyer(nomFoyer); //Child
-        //On affecte le child au parent
         b.setFoyer(f);
         return blocRepository.save(b);
     }

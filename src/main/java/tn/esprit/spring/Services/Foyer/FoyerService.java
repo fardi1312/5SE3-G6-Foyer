@@ -1,10 +1,10 @@
 package tn.esprit.spring.Services.Foyer;
 
+import jakarta.persistence.EntityNotFoundException;
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
 import tn.esprit.spring.DAO.Entities.*;
 import tn.esprit.spring.DAO.Repositories.BlocRepository;
-import tn.esprit.spring.DAO.Repositories.EtudiantRepository;
 import tn.esprit.spring.DAO.Repositories.FoyerRepository;
 import tn.esprit.spring.DAO.Repositories.UniversiteRepository;
 
@@ -16,6 +16,7 @@ public class FoyerService implements IFoyerService {
     FoyerRepository repo;
     UniversiteRepository universiteRepository;
     BlocRepository blocRepository;
+    private static final String FOYER_NOT_FOUND_MESSAGE = "Foyer with id %d not found";
 
     @Override
     public Foyer addOrUpdate(Foyer f) {
@@ -26,11 +27,13 @@ public class FoyerService implements IFoyerService {
     public List<Foyer> findAll() {
         return repo.findAll();
     }
-
     @Override
+
     public Foyer findById(long id) {
-        return repo.findById(id).get();
+        return repo.findById(id)
+                .orElseThrow(() -> new EntityNotFoundException(String.format(FOYER_NOT_FOUND_MESSAGE, id)));
     }
+
 
     @Override
     public void deleteById(long id) {
@@ -53,10 +56,12 @@ public class FoyerService implements IFoyerService {
 
     @Override
     public Universite desaffecterFoyerAUniversite(long idUniversite) {
-        Universite u = universiteRepository.findById(idUniversite).get(); // Parent
+        Universite u = universiteRepository.findById(idUniversite)
+                .orElseThrow(() -> new EntityNotFoundException("Universite with id " + idUniversite + " not found"));
         u.setFoyer(null);
         return universiteRepository.save(u);
     }
+
 
     @Override
     public Foyer ajouterFoyerEtAffecterAUniversite(Foyer foyer, long idUniversite) {
@@ -64,7 +69,8 @@ public class FoyerService implements IFoyerService {
         List<Bloc> blocs = foyer.getBlocs();
         // Foyer est le child et universite est parent
         Foyer f = repo.save(foyer);
-        Universite u = universiteRepository.findById(idUniversite).get();
+        Universite u = universiteRepository.findById(idUniversite)
+                .orElseThrow(() -> new EntityNotFoundException("Universite with id " + idUniversite + " not found"));
         // Foyer est le child et bloc est le parent
         //On affecte le child au parent
         for (Bloc bloc : blocs) {
@@ -75,24 +81,6 @@ public class FoyerService implements IFoyerService {
         return universiteRepository.save(u).getFoyer();
     }
 
-    @Override
-    public Foyer ajoutFoyerEtBlocs(Foyer foyer) {
-        //Foyer child / Bloc parent
-        //Objet foyer = attribut objet foyer + les blocs associés
-//        Foyer f = repo.save(foyer);
-//        for (Bloc b : foyer.getBlocs()) {
-//            b.setFoyer(f);
-//            blocRepository.save(b);
-//        }
-//        return f;
-        //-----------------------------------------
-        List<Bloc> blocs = foyer.getBlocs();
-        foyer = repo.save(foyer);
-        for (Bloc b : blocs) {
-            b.setFoyer(foyer);
-            blocRepository.save(b);
-        }
-        return foyer;
-    }
+
 
 }
