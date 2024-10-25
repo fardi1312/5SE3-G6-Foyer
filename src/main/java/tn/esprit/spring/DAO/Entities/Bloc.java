@@ -9,6 +9,7 @@ import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
+
 @Entity
 @Table(name = "T_BLOC")
 @Getter
@@ -23,10 +24,12 @@ public class Bloc implements Serializable {
     long idBloc;
     String nomBloc;
     long capaciteBloc;
+
     @ManyToOne
     @JsonIgnore
-    Foyer foyer;
+    transient Foyer foyer; // Marqué comme transient
+
     @OneToMany(mappedBy = "bloc", fetch = FetchType.EAGER)
     @JsonIgnore
-    List<Chambre> chambres= new ArrayList<>();
+    private List<Chambre> chambres = new ArrayList<>();
 }

@@ -8,7 +8,6 @@ import java.io.Serializable;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
-
 @Entity
 @Table(name = "T_ETUDIANT")
 @Getter
@@ -26,8 +25,10 @@ public class Etudiant implements Serializable {
     long cin;
     String ecole;
     LocalDate dateNaissance;
+
+    // Liste privée pour éviter l'accès direct
     @ManyToMany(mappedBy = "etudiants")
-    List<Reservation> reservations= new ArrayList<>();
+    private List<Reservation> reservations = new ArrayList<>();
 
 
 }

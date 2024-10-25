@@ -21,14 +21,17 @@ public class Chambre implements Serializable {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     long idChambre;
+
     @Column(unique = true)
     long numeroChambre;
+
     @Enumerated(EnumType.STRING)
     TypeChambre typeC;
+
     @ManyToOne(cascade = CascadeType.ALL)
     @JsonIgnore
-    Bloc bloc;
-    @OneToMany
-    List<Reservation> reservations= new ArrayList<>();
+    transient Bloc bloc; // Marqué comme transient
 
+    @OneToMany
+    private List<Reservation> reservations = new ArrayList<>(); // Assurez-vous que Reservation est Serializable
 }

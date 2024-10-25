@@ -10,7 +10,6 @@ import tn.esprit.spring.DAO.Repositories.ChambreRepository;
 
 import java.time.LocalDate;
 import java.util.List;
-import java.util.stream.Collectors;
 
 @Service
 @AllArgsConstructor
@@ -65,7 +64,7 @@ public class ChambreService implements IChambreService {
         return repo.findAll().stream()
                 .filter(c -> c.getTypeC().equals(type) && c.getBloc().getFoyer().getNomFoyer().equals(nomFoyer))
                 .filter(c -> availableSpots(c, dateDebutAU, dateFinAU))
-                .collect(Collectors.toList());
+                .toList();
     }
 
     private boolean availableSpots(Chambre chambre, LocalDate dateDebutAU, LocalDate dateFinAU) {
