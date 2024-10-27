@@ -32,7 +32,6 @@ public class ChambreService implements IChambreService {
         return repo.findById(id).orElseThrow(() -> new EntityNotFoundException("Chambre with id " + id + " not found"));
     }
 
-
     @Override
     public void deleteById(long id) {
         repo.deleteById(id);
@@ -55,30 +54,10 @@ public class ChambreService implements IChambreService {
 
     @Override
     public List<Chambre> getChambresNonReserveParNomFoyerEtTypeChambre(String nomFoyer, TypeChambre type) {
-        // Calculate the start and end of the current academic year
         int currentYear = LocalDate.now().getYear();
         LocalDate dateDebutAU = LocalDate.of((LocalDate.now().getMonthValue() <= 7) ? currentYear - 1 : currentYear, 9, 15);
         LocalDate dateFinAU = LocalDate.of((LocalDate.now().getMonthValue() <= 7) ? currentYear : currentYear + 1, 6, 30);
 
-        // Filter and find available rooms based on type and reservation status
-        return repo.findAll().stream()
-                .filter(c -> c.getTypeC().equals(type) && c.getBloc().getFoyer().getNomFoyer().equals(nomFoyer))
-                .filter(c -> availableSpots(c, dateDebutAU, dateFinAU))
-                .toList();
+        return repo.findAvailableChambres(nomFoyer, type, dateDebutAU, dateFinAU);
     }
-
-    private boolean availableSpots(Chambre chambre, LocalDate dateDebutAU, LocalDate dateFinAU) {
-        long reservationsDuringAU = chambre.getReservations().stream()
-                .filter(r -> !r.getAnneeUniversitaire().isBefore(dateDebutAU) && !r.getAnneeUniversitaire().isAfter(dateFinAU))
-                .count();
-
-        // Check available spots based on room type
-        return switch (chambre.getTypeC()) {
-            case SIMPLE -> reservationsDuringAU == 0;
-            case DOUBLE -> reservationsDuringAU < 2;
-            case TRIPLE -> reservationsDuringAU < 3;
-        };
-    }
-
-
 }

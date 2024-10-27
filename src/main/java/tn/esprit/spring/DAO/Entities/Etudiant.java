@@ -20,12 +20,18 @@ import java.util.List;
 public class Etudiant implements Serializable {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    long idEtudiant;
-    String nomEt;
-    String prenomEt;
-    long cin;
-    String ecole;
-    LocalDate dateNaissance;
+    private long idEtudiant;
+
+    private String nomEt;
+
+    private String prenomEt;
+
+    private long cin;
+
+    private String ecole;
+
+    private LocalDate dateNaissance;
+
     @ManyToMany(mappedBy = "etudiants")
-    List<Reservation> reservations= new ArrayList<>();
+    private transient List<Reservation> reservations = new ArrayList<>(); // Made private and transient
 }

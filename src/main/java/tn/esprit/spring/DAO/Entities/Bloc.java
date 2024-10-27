@@ -20,13 +20,17 @@ import java.util.List;
 public class Bloc implements Serializable {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    long idBloc;
-    String nomBloc;
-    long capaciteBloc;
+    private long idBloc;
+
+    private String nomBloc;
+
+    private long capaciteBloc;
+
     @ManyToOne
     @JsonIgnore
-    Foyer foyer;
+    private Foyer foyer;
+
     @OneToMany(mappedBy = "bloc", fetch = FetchType.EAGER)
     @JsonIgnore
-    List<Chambre> chambres= new ArrayList<>();
+    private transient List<Chambre> chambres = new ArrayList<>(); // Made private and transient
 }

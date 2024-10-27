@@ -19,11 +19,15 @@ import java.util.List;
 public class Foyer implements Serializable {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    long idFoyer;
-    String nomFoyer;
-    long capaciteFoyer;
+    private long idFoyer;
+
+    private String nomFoyer;
+
+    private long capaciteFoyer;
+
     @OneToOne(mappedBy = "foyer")
-    Universite universite;
+    private Universite universite;
+
     @OneToMany(mappedBy = "foyer")
-    List<Bloc> blocs= new ArrayList<>();
+    private transient List<Bloc> blocs = new ArrayList<>(); // Made private and transient
 }
