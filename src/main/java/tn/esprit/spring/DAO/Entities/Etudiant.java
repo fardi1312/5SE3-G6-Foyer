@@ -28,6 +28,4 @@ public class Etudiant implements Serializable {
     LocalDate dateNaissance;
     @ManyToMany(mappedBy = "etudiants")
     List<Reservation> reservations= new ArrayList<>();
-
-
 }

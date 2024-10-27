@@ -30,5 +30,4 @@ public class Chambre implements Serializable {
     Bloc bloc;
     @OneToMany
     List<Reservation> reservations= new ArrayList<>();
-
 }
