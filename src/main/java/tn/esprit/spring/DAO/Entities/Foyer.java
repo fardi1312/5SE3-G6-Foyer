@@ -5,6 +5,7 @@ import lombok.*;
 import lombok.experimental.FieldDefaults;
 
 import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.List;
 
 @Entity
@@ -20,6 +21,9 @@ public class Foyer implements Serializable {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     long idFoyer;
     String nomFoyer;
+    long capaciteFoyer;
+    @OneToOne(mappedBy = "foyer")
+    Universite universite;
     @OneToMany(mappedBy = "foyer")
-    private List<Bloc> blocs;
+    List<Bloc> blocs= new ArrayList<>();
 }
