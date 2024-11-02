@@ -12,15 +12,17 @@ services:
       - "3306:3306"
     networks:
       - app-network
+    volumes:
+      - mysql-data:/var/lib/mysql # Persist MySQL data
 
   spring-app:
+    image: fardi1312/foyerdokerhub:${BUILD_NUMBER} # Use your Docker Hub username and Jenkins BUILD_NUMBER for tagging
     build:
-      context: .
+      context: . # This will look for a Dockerfile in the current directory
     environment:
-      DB_HOST: mysql
-      DB_PORT: 3306
-      DB_USER: utilisateur
-      DB_PASSWORD: motdepasse
+      SPRING_DATASOURCE_URL: jdbc:mysql://mysql:3306/foyerMassoudFardi
+      SPRING_DATASOURCE_USERNAME: utilisateur
+      SPRING_DATASOURCE_PASSWORD: motdepasse
     ports:
       - "8412:8412"
     depends_on:
@@ -31,3 +33,6 @@ services:
 networks:
   app-network:
     driver: bridge
+
+volumes:
+  mysql-data: # Named volume for MySQL data persistence
