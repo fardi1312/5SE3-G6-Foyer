@@ -9,7 +9,7 @@ services:
       MYSQL_USER: utilisateur
       MYSQL_PASSWORD: motdepasse
     ports:
-      - "3306:3306"
+      - "3307:3306"  # Change host port to 3307
     networks:
       - app-network
     volumes:
@@ -20,7 +20,7 @@ services:
     build:
       context: . # This will look for a Dockerfile in the current directory
     environment:
-      SPRING_DATASOURCE_URL: jdbc:mysql://mysql:3306/foyerMassoudFardi
+      SPRING_DATASOURCE_URL: jdbc:mysql://mysql:3306/foyerMassoudFardi  # Keep using 3306 inside the container
       SPRING_DATASOURCE_USERNAME: utilisateur
       SPRING_DATASOURCE_PASSWORD: motdepasse
     ports:
