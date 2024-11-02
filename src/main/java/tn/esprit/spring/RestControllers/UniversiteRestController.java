@@ -38,5 +38,4 @@ public class UniversiteRestController {
         service.deleteById(id);
     }
 
-
 }

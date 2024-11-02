@@ -1,26 +1,119 @@
-# Ignore le dossier de compilation
-/target/
+# Maven
+target/
+!.mvn/wrapper/maven-wrapper.jar
+!**/src/main/**/target/
+!**/src/test/**/target/
 
-# Ignore les fichiers de configuration de l'environnement
-*.log
-*.env
+# Spring Tool Suite (STS)
+.apt_generated
+.classpath
+.factorypath
+.project
+.settings
+.springBeans
+.sts4-cache
 
-# Ignore les fichiers de dépendances de l'IDE
-.vscode/
+# IntelliJ IDEA
 .idea/
+*.iws
 *.iml
-
-# Ignore les fichiers de sauvegarde et temporaires
-*~
-*.tmp
-*.bak
-
-# Ignore les fichiers de compilations générés
-*.class
+*.ipr
+out/
 *.jar
 *.war
-*.zip
+*.ear
+*.class
+*.log
 
-# Ignore les fichiers du système d'exploitation
+# NetBeans
+/nbproject/private/
+/nbbuild/
+/dist/
+/nbdist/
+/.nb-gradle/
+build/
+!**/src/main/**/build/
+!**/src/test/**/build/
+
+# Visual Studio Code (VS Code)
+.vscode/
+.history/
+
+# Eclipse
+.metadata/
+bin/
+*.class
+*.launch
+
+# Gradle
+.gradle/
+build/
+
+# JRebel
+rebel.xml
+.rebel
+
+# Logs
+*.log
+*.tstamp
+*.tmp
+*.temp
+
+# Temporary files
+*.tmp
+*.temp
+*.bak
+*.swp
+*.orig
+
+# OS generated files
 .DS_Store
 Thumbs.db
+ehthumbs.db
+Icon?
+Desktop.ini
+*.lnk
+
+# Other
+*.jar
+*.war
+*.ear
+*.class
+*.user
+*.DS_Store
+*.project
+*.classpath
+
+# Coverage reports
+coverage/
+*.coverage
+*.coveragerc
+
+# Miscellaneous
+*.zip
+*.tar.gz
+*.rar
+*.7z
+*.tar
+*.gz
+*.swp
+*.swo
+*.pid
+*.seed
+*.csv
+*.dat
+
+# IntelliJ logs
+idea.log
+*.idea/workspace.xml
+*.idea/tasks.xml
+*.idea/usage.statistics.xml
+*.idea/dictionaries
+*.idea/*.iml
+
+# maven-wrapper
+/.mvn/wrapper/maven-wrapper.properties
+
+# JUnit reports
+**/target/surefire-reports/
+**/target/failsafe-reports/

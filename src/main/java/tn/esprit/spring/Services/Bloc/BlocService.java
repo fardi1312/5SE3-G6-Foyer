@@ -21,7 +21,9 @@ public class BlocService implements IBlocService {
     BlocRepository blocRepository;
     FoyerRepository foyerRepository;
 
-
+    public String greet() {
+        return "Hello, World!";
+    }
 
     @Override
     public Bloc addOrUpdate(Bloc b) {
