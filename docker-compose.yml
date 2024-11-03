@@ -1,0 +1,49 @@
+version: '3.8'
+
+services:
+  mysql:
+    image: mysql:8.0
+    environment:
+      MYSQL_ROOT_PASSWORD: rootpassword
+      MYSQL_DATABASE: foyer
+      MYSQL_USER: utilisateur
+      MYSQL_PASSWORD: motdepasse
+    ports:
+      - "3310:3306"  # Host port mapped to container port
+    networks:
+      - app-network
+    volumes:
+      - mysql-data:/var/lib/mysql # Persist MySQL data
+
+  spring-app:
+    image: nadhirtbini/foyer:latest # Use 'latest' or set a specific tag
+    build:
+      context: . # This will look for a Dockerfile in the current directory
+    environment:
+      SPRING_DATASOURCE_URL: jdbc:mysql://mysql:3306/foyer  # Use 3306 for MySQL inside the container
+      SPRING_DATASOURCE_USERNAME: utilisateur
+      SPRING_DATASOURCE_PASSWORD: motdepasse
+    ports:
+      - "8110:8081"
+    depends_on:
+      - mysql
+    networks:
+      - app-network
+
+  phpmyadmin:
+    image: phpmyadmin/phpmyadmin
+    ports:
+      - "8888:80"  # Change this to your desired port
+    environment:
+      PMA_HOST: mysql
+      PMA_USER: utilisateur
+      PMA_PASSWORD: motdepasse
+    networks:
+      - app-network
+
+networks:
+  app-network:
+    driver: bridge
+
+volumes:
+  mysql-data:
