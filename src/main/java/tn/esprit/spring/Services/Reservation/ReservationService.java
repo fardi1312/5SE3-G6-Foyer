@@ -12,6 +12,7 @@ import tn.esprit.spring.DAO.Repositories.EtudiantRepository;
 import tn.esprit.spring.DAO.Repositories.ReservationRepository;
 
 import java.time.LocalDate;
+import java.util.ArrayList;
 import java.util.List;
 
 @Service
@@ -125,15 +126,23 @@ public class ReservationService implements IReservationService {
     }
 
     @Override
-    public String annulerReservation(long cinEtudiant) {
-        Reservation r = repo.findByEtudiantsCinAndEstValide(cinEtudiant, true);
-        Chambre c = chambreRepository.findByReservationsIdReservation(r.getIdReservation());
-        c.getReservations().remove(r);
-        chambreRepository.save(c);
-        repo.delete(r);
-        return "La réservation " + r.getIdReservation() + " est annulée avec succés";
-    }
+    public String annulerReservation(long cin) {
+        Reservation reservation = repo.findByEtudiantsCinAndEstValide(cin, true);
+        if (reservation == null) {
+            throw new EntityNotFoundException("Reservation not found for student with CIN " + cin);
+        }
 
+        Chambre chambre = chambreRepository.findByReservationsIdReservation(reservation.getIdReservation());
+        if (chambre != null) {
+            List<Reservation> reservations = new ArrayList<>(chambre.getReservations());
+            reservations.removeIf(r -> r.getIdReservation().equals(reservation.getIdReservation()));
+            chambre.setReservations(reservations);
+            chambreRepository.save(chambre);
+        }
+
+        repo.delete(reservation);
+        return "La réservation " + reservation.getIdReservation() + " est annulée avec succès";
+    }
 
 
 

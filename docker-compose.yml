@@ -9,24 +9,35 @@ services:
       MYSQL_USER: utilisateur
       MYSQL_PASSWORD: motdepasse
     ports:
-      - "3307:3306"  # Change host port to 3307
+      - "3310:3306"  # Host port mapped to container port
     networks:
       - app-network
     volumes:
       - mysql-data:/var/lib/mysql # Persist MySQL data
 
   spring-app:
-    image: fardi1312/foyerdokerhub:${BUILD_NUMBER} # Use your Docker Hub username and Jenkins BUILD_NUMBER for tagging
+    image: fardi1312/foyerdokerhub:latest # Use 'latest' or set a specific tag
     build:
       context: . # This will look for a Dockerfile in the current directory
     environment:
-      SPRING_DATASOURCE_URL: jdbc:mysql://mysql:3306/foyerMassoudFardi  # Keep using 3306 inside the container
+      SPRING_DATASOURCE_URL: jdbc:mysql://mysql:3306/foyerMassoudFardi  # Use 3306 for MySQL inside the container
       SPRING_DATASOURCE_USERNAME: utilisateur
       SPRING_DATASOURCE_PASSWORD: motdepasse
     ports:
-      - "8412:8412"
+      - "8412:8081"
     depends_on:
       - mysql
+    networks:
+      - app-network
+
+  phpmyadmin:
+    image: phpmyadmin/phpmyadmin
+    ports:
+      - "8888:80"  # Change this to your desired port
+    environment:
+      PMA_HOST: mysql
+      PMA_USER: utilisateur
+      PMA_PASSWORD: motdepasse
     networks:
       - app-network
 
@@ -35,4 +46,4 @@ networks:
     driver: bridge
 
 volumes:
-  mysql-data: # Named volume for MySQL data persistence
+  mysql-data:

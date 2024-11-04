@@ -5,7 +5,7 @@ FROM openjdk:17-jdk-slim
 WORKDIR /app
 
 # Copy the Maven build output (jar file) to the container
-COPY target/foyer-0.0.1-SNAPSHOT.jar foyer-app.jar
+COPY target/FoyerSE-0.0.1-SNAPSHOT.jar foyer-app.jar
 
 # Make port 8412 available to the world outside this container
 EXPOSE 8412

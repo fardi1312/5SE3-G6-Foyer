@@ -118,6 +118,4 @@ idea.log
 **/target/surefire-reports/
 **/target/failsafe-reports/
 
-# Test files
-**/*Test.java
-**/src/test/**/*
+
