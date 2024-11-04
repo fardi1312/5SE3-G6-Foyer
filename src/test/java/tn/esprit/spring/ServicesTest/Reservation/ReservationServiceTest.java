@@ -2,13 +2,12 @@ package tn.esprit.spring.ServicesTest.Reservation;
 
 import jakarta.persistence.EntityNotFoundException;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.boot.test.context.SpringBootTest;
-import tn.esprit.spring.DAO.Entities.Bloc;  // Ensure this import is included
+import org.springframework.test.context.ActiveProfiles;
 import tn.esprit.spring.DAO.Entities.Chambre;
 import tn.esprit.spring.DAO.Entities.Etudiant;
 import tn.esprit.spring.DAO.Entities.Reservation;
@@ -28,8 +27,8 @@ import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
 
+@ActiveProfiles("test")
 @SpringBootTest
-@ExtendWith(MockitoExtension.class)
 public class ReservationServiceTest {
 
     @Mock
@@ -59,101 +58,89 @@ public class ReservationServiceTest {
         chambre.setIdChambre(1L);
         chambre.setNumeroChambre(101);
         chambre.setTypeC(TypeChambre.SIMPLE);
-
-        // Initialize the reservations list
-        chambre.setReservations(new ArrayList<>());
-        chambre.getReservations().add(reservation); // Now you can add reservations
+        chambre.setReservations(new ArrayList<>(Arrays.asList(reservation)));
 
         etudiant = new Etudiant();
         etudiant.setCin(123456);
     }
 
     @Test
+    @DisplayName("Test d'ajout ou de mise à jour d'une réservation")
     public void testAddOrUpdate() {
         when(reservationRepository.save(any(Reservation.class))).thenReturn(reservation);
 
         Reservation savedReservation = reservationService.addOrUpdate(reservation);
 
-        assertNotNull(savedReservation);
-        assertEquals(reservation.getIdReservation(), savedReservation.getIdReservation());
-        System.out.println("testAddOrUpdate: Reservation added or updated with ID " + savedReservation.getIdReservation());
+        assertNotNull(savedReservation, "La réservation ne doit pas être nulle après l'ajout ou la mise à jour.");
+        assertEquals(reservation.getIdReservation(), savedReservation.getIdReservation(), "L'ID de réservation doit correspondre.");
         verify(reservationRepository, times(1)).save(reservation);
     }
 
     @Test
+    @DisplayName("Test de la récupération de toutes les réservations")
     public void testFindAll() {
         when(reservationRepository.findAll()).thenReturn(Arrays.asList(reservation));
 
         List<Reservation> reservations = reservationService.findAll();
 
-        assertNotNull(reservations);
-        assertEquals(1, reservations.size());
-        System.out.println("testFindAll: Found " + reservations.size() + " reservations.");
+        assertNotNull(reservations, "La liste des réservations ne doit pas être nulle.");
+        assertEquals(1, reservations.size(), "Il devrait y avoir une réservation.");
         verify(reservationRepository, times(1)).findAll();
     }
 
     @Test
+    @DisplayName("Test de la récupération d'une réservation par ID")
     public void testFindById() {
         when(reservationRepository.findById("2023/2024-Bloc A-101-123456")).thenReturn(Optional.of(reservation));
 
         Reservation foundReservation = reservationService.findById("2023/2024-Bloc A-101-123456");
 
-        assertNotNull(foundReservation);
-        assertEquals(reservation.getIdReservation(), foundReservation.getIdReservation());
-        System.out.println("testFindById: Reservation found with ID " + foundReservation.getIdReservation());
+        assertNotNull(foundReservation, "La réservation trouvée ne doit pas être nulle.");
+        assertEquals(reservation.getIdReservation(), foundReservation.getIdReservation(), "L'ID de réservation doit correspondre.");
         verify(reservationRepository, times(1)).findById("2023/2024-Bloc A-101-123456");
     }
 
     @Test
+    @DisplayName("Test de la récupération d'une réservation par ID - Non trouvé")
     public void testFindById_NotFound() {
         when(reservationRepository.findById("unknown-id")).thenReturn(Optional.empty());
 
         Exception exception = assertThrows(EntityNotFoundException.class, () -> reservationService.findById("unknown-id"));
-
-        assertEquals("Reservation with id unknown-id not found", exception.getMessage());
-        System.out.println("testFindById_NotFound: " + exception.getMessage());
+        assertEquals("Reservation with id unknown-id not found", exception.getMessage(), "Le message d'exception doit correspondre.");
     }
 
     @Test
+    @DisplayName("Test de la suppression d'une réservation par ID")
     public void testDeleteById() {
         doNothing().when(reservationRepository).deleteById("2023/2024-Bloc A-101-123456");
 
         reservationService.deleteById("2023/2024-Bloc A-101-123456");
 
         verify(reservationRepository, times(1)).deleteById("2023/2024-Bloc A-101-123456");
-        System.out.println("testDeleteById: Reservation with ID 2023/2024-Bloc A-101-123456 has been deleted.");
     }
 
     @Test
+    @DisplayName("Test de la suppression d'une réservation")
     public void testDelete() {
         doNothing().when(reservationRepository).delete(reservation);
 
         reservationService.delete(reservation);
 
         verify(reservationRepository, times(1)).delete(reservation);
-        System.out.println("testDelete: Reservation has been deleted.");
     }
 
-
     @Test
+    @DisplayName("Test d'annulation d'une réservation")
     public void testAnnulerReservation() {
-        // Arrange
         when(reservationRepository.findByEtudiantsCinAndEstValide(123456, true)).thenReturn(reservation);
         when(chambreRepository.findByReservationsIdReservation(reservation.getIdReservation())).thenReturn(chambre);
         when(chambreRepository.save(any(Chambre.class))).thenReturn(chambre);
-
-        // Stubbing the void method
         doNothing().when(reservationRepository).delete(any(Reservation.class));
 
-        // Act
         String resultMessage = reservationService.annulerReservation(123456);
 
-        // Assert
-        assertNotNull(resultMessage);
+        assertNotNull(resultMessage, "Le message de résultat ne doit pas être nul.");
         assertEquals("La réservation 2023/2024-Bloc A-101-123456 est annulée avec succès", resultMessage);
-        System.out.println("testAnnulerReservation: " + resultMessage);
-
-        // Verify
         verify(reservationRepository, times(1)).delete(reservation);
     }
 }
