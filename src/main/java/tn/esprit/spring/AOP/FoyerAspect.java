@@ -25,12 +25,11 @@ public class FoyerAspect {
     }
 
     @Around("execution(* tn.esprit.spring.Services..*.*(..))")
-    public Object profile(ProceedingJoinPoint pjp) throws Throwable
-    {
+    public Object profile(ProceedingJoinPoint pjp) throws Throwable {
         long start = System.currentTimeMillis();
-        Object obj = pjp.proceed();
+        Object obj = pjp.proceed(); // Appel de la méthode et récupération du résultat
         long elapsedTime = System.currentTimeMillis() - start;
         log.info("Method execution time: " + elapsedTime + " milliseconds.");
-        return null;
+        return obj; // Retour du résultat obtenu
     }
 }

@@ -29,6 +29,7 @@ public class Chambre implements Serializable {
     @JsonIgnore
     Bloc bloc;
     @OneToMany
-    List<Reservation> reservations= new ArrayList<>();
+    @JsonIgnore
+    private List<Reservation> reservations= new ArrayList<>();
 
 }

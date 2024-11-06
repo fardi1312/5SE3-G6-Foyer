@@ -1,15 +1,14 @@
 package tn.esprit.spring.Services.Reservation;
 
+import jakarta.persistence.EntityNotFoundException;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import tn.esprit.spring.DAO.Entities.Chambre;
 import tn.esprit.spring.DAO.Entities.Etudiant;
-import tn.esprit.spring.DAO.Entities.Foyer;
 import tn.esprit.spring.DAO.Entities.Reservation;
 import tn.esprit.spring.DAO.Repositories.ChambreRepository;
 import tn.esprit.spring.DAO.Repositories.EtudiantRepository;
-import tn.esprit.spring.DAO.Repositories.FoyerRepository;
 import tn.esprit.spring.DAO.Repositories.ReservationRepository;
 
 import java.time.LocalDate;
@@ -22,6 +21,7 @@ public class ReservationService implements IReservationService {
     ReservationRepository repo;
     ChambreRepository chambreRepository;
     EtudiantRepository etudiantRepository;
+    private static final String RESERVATION_NOT_FOUND_MESSAGE = "Reservation with id %s not found";
 
     @Override
     public Reservation addOrUpdate(Reservation r) {
@@ -35,7 +35,8 @@ public class ReservationService implements IReservationService {
 
     @Override
     public Reservation findById(String id) {
-        return repo.findById(id).get();
+        return repo.findById(id)
+                .orElseThrow(() -> new EntityNotFoundException(String.format(RESERVATION_NOT_FOUND_MESSAGE, id)));
     }
 
     @Override
@@ -56,7 +57,6 @@ public class ReservationService implements IReservationService {
         // Début "récuperer l'année universitaire actuelle"
         LocalDate dateDebutAU;
         LocalDate dateFinAU;
-        int numReservation;
         int year = LocalDate.now().getYear() % 100;
         if (LocalDate.now().getMonthValue() <= 7) {
             dateDebutAU = LocalDate.of(Integer.parseInt("20" + (year - 1)), 9, 15);
@@ -71,8 +71,7 @@ public class ReservationService implements IReservationService {
         Etudiant e = etudiantRepository.findByCin(cin);
         boolean ajout = false;
         int numRes = chambreRepository.countReservationsByIdChambreAndReservationsAnneeUniversitaireBetween(c.getIdChambre(), dateDebutAU, dateFinAU);
-        //int numRes = chambreRepository.listerReservationPourUneChambre(c.getIdChambre(), dateDebutAU, dateFinAU);
-        System.err.println(numRes);
+        log.info("Number of reservations: {}", numRes);
         switch (c.getTypeC()) {
             case SIMPLE:
                 if (numRes < 1) {
@@ -100,7 +99,6 @@ public class ReservationService implements IReservationService {
             res.setEstValide(false);
             res.setAnneeUniversitaire(LocalDate.now());
             // AU-BLOC-NumChambre-CIN --> Exemple: 2023/2024-Bloc A-1-123456789
-            //res.setIdReservation(c.getNumeroChambre() + "-" + c.getBloc().getNomBloc() + "-" + e.getCin());
             res.setIdReservation(dateDebutAU.getYear() + "/" + dateFinAU.getYear() + "-" + c.getBloc().getNomBloc() + "-" + c.getNumeroChambre() + "-" + e.getCin());
             res.getEtudiants().add(e);
             res.setEstValide(true);
@@ -128,8 +126,8 @@ public class ReservationService implements IReservationService {
 
     @Override
     public void affectReservationAChambre(String idRes, long idChambre) {
-        Reservation r = repo.findById(idRes).get();
-        Chambre c = chambreRepository.findById(idChambre).get();
+        Reservation r = repo.findById(idRes).orElseThrow(() -> new EntityNotFoundException("Reservation not found"));
+        Chambre c = chambreRepository.findById(idChambre).orElseThrow(() -> new EntityNotFoundException("Chambre not found"));
         // Parent: Chambre , Child: Reservation
         // On affecte le child au parent
         c.getReservations().add(r);
@@ -141,7 +139,6 @@ public class ReservationService implements IReservationService {
         // Début "récuperer l'année universitaire actuelle"
         LocalDate dateDebutAU;
         LocalDate dateFinAU;
-        int numReservation;
         int year = LocalDate.now().getYear() % 100;
         if (LocalDate.now().getMonthValue() <= 7) {
             dateDebutAU = LocalDate.of(Integer.parseInt("20" + (year - 1)), 9, 15);

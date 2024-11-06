@@ -28,5 +28,5 @@ public class Bloc implements Serializable {
     private Foyer foyer;
     @OneToMany(mappedBy = "bloc", fetch = FetchType.EAGER)
     @JsonIgnore
-    private transient List<Chambre> chambres= new ArrayList<>();
+    private List<Chambre> chambres= new ArrayList<>();
 }

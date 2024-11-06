@@ -1,5 +1,6 @@
 package tn.esprit.spring.DAO.Entities;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.*;
 import lombok.experimental.FieldDefaults;
@@ -27,7 +28,8 @@ public class Etudiant implements Serializable {
     String ecole;
     LocalDate dateNaissance;
     @ManyToMany(mappedBy = "etudiants")
-    List<Reservation> reservations= new ArrayList<>();
+    @JsonIgnore
+    private List<Reservation> reservations= new ArrayList<>();
 
 
 }
