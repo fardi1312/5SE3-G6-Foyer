@@ -27,7 +27,14 @@ public class Etudiant implements Serializable {
     String ecole;
     LocalDate dateNaissance;
     @ManyToMany(mappedBy = "etudiants")
-    List<Reservation> reservations= new ArrayList<>();
+    private List<Reservation> reservations= new ArrayList<>();
 
+    public long getId() {
+        return idEtudiant;
+    }
+
+    public void setId(long id) {
+        this.idEtudiant = id;
+    }
 
 }
