@@ -78,7 +78,7 @@ public class ChambreService implements IChambreService {
     }
     // Helper method to calculate university year start and end dates
     private LocalDate[] calculateUniversityYearDates() {
-        LocalDate[] dates = new LocalDate[2];
+        var dates = new LocalDate[2];
         int year = LocalDate.now().getYear() % 100;
         if (LocalDate.now().getMonthValue() <= 7) {
             dates[0] = LocalDate.of(Integer.parseInt("20" + (year - 1)), 9, 15);
@@ -95,7 +95,7 @@ public class ChambreService implements IChambreService {
     }
     // Helper method to count reservations for a chambre in the current university year
     private int countReservationsInUniversityYear(Chambre chambre, LocalDate[] universityYearDates) {
-        int count = 0;
+        var count = 0;
         for (Reservation reservation : chambre.getReservations()) {
             if (reservation.getAnneeUniversitaire().isBefore(universityYearDates[1]) && reservation.getAnneeUniversitaire().isAfter(universityYearDates[0])) {
                 count++;
@@ -136,9 +136,9 @@ public class ChambreService implements IChambreService {
     @Override
     public void pourcentageChambreParTypeChambre() {
         long totalChambre = repo.count();
-        double pSimple = (repo.countChambreByTypeC(TypeChambre.SIMPLE) * 100) / (double) totalChambre;
-        double pDouble = (repo.countChambreByTypeC(TypeChambre.DOUBLE) * 100) / (double) totalChambre;
-        double pTriple = (repo.countChambreByTypeC(TypeChambre.TRIPLE) * 100) / (double) totalChambre;
+        var pSimple = (repo.countChambreByTypeC(TypeChambre.SIMPLE) * 100) / (double) totalChambre;
+        var pDouble = (repo.countChambreByTypeC(TypeChambre.DOUBLE) * 100) / (double) totalChambre;
+        var pTriple = (repo.countChambreByTypeC(TypeChambre.TRIPLE) * 100) / (double) totalChambre;
         log.info("Nombre total des chambre: " + totalChambre);
         log.info("Le pourcentage des chambres pour le type SIMPLE est égale à " + pSimple);
         log.info("Le pourcentage des chambres pour le type DOUBLE est égale à " + pDouble);
