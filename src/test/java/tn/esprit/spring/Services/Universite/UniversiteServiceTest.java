@@ -17,7 +17,7 @@ import java.util.List;
 @SpringBootTest
 @Transactional
 @ActiveProfiles("test")
-public class UniversiteServiceTest {
+class UniversiteServiceTest {
 
     @Autowired
     private UniversiteService universiteService;
@@ -28,7 +28,7 @@ public class UniversiteServiceTest {
     private Universite universite;
 
     @BeforeEach
-    public void setUp() {
+    void setUp() {
         // Create a new Universite entity to be used for tests
         universite = Universite.builder()
                 .nomUniversite("Test University")
@@ -37,7 +37,7 @@ public class UniversiteServiceTest {
     }
 
     @Test
-    public void testAddOrUpdate() {
+    void testAddOrUpdate() {
         Universite savedUniversite = universiteService.addOrUpdate(universite);
 
         assertNotNull(savedUniversite.getIdUniversite(), "ID should not be null after save");
@@ -45,7 +45,7 @@ public class UniversiteServiceTest {
     }
 
     @Test
-    public void testFindAll() {
+    void testFindAll() {
         universiteService.addOrUpdate(universite); // First save the universite
         List<Universite> universites = universiteService.findAll();
 
@@ -54,7 +54,7 @@ public class UniversiteServiceTest {
     }
 
     @Test
-    public void testFindById() {
+    void testFindById() {
         Universite savedUniversite = universiteService.addOrUpdate(universite);
         Universite foundUniversite = universiteService.findById(savedUniversite.getIdUniversite());
 
@@ -63,14 +63,14 @@ public class UniversiteServiceTest {
     }
 
     @Test
-    public void testFindByIdNotFound() {
+    void testFindByIdNotFound() {
         assertThrows(EntityNotFoundException.class, () -> {
             universiteService.findById(999L); // Trying to find an ID that doesn't exist
         }, "EntityNotFoundException should be thrown when university is not found");
     }
 
     @Test
-    public void testDeleteById() {
+    void testDeleteById() {
         Universite savedUniversite = universiteService.addOrUpdate(universite);
         long id = savedUniversite.getIdUniversite();
 
@@ -82,13 +82,11 @@ public class UniversiteServiceTest {
     }
 
     @Test
-    public void testDelete() {
+    void testDelete() {
         Universite savedUniversite = universiteService.addOrUpdate(universite);
 
         universiteService.delete(savedUniversite);
 
-        assertThrows(EntityNotFoundException.class, () -> {
-            universiteService.findById(savedUniversite.getIdUniversite()); // Trying to find a deleted university
-        }, "EntityNotFoundException should be thrown after deletion");
+        assertThrows(EntityNotFoundException.class, () -> universiteService.findById(savedUniversite.getIdUniversite()));
     }
 }

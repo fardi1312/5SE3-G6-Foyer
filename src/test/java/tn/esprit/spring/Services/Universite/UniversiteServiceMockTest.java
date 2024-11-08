@@ -16,7 +16,7 @@ import tn.esprit.spring.DAO.Repositories.UniversiteRepository;
 import java.util.Optional;
 
 @ExtendWith(MockitoExtension.class)
-public class UniversiteServiceMockTest {
+class UniversiteServiceMockTest {
 
     @Mock
     private UniversiteRepository universiteRepository;
@@ -27,7 +27,7 @@ public class UniversiteServiceMockTest {
     private Universite universite;
 
     @BeforeEach
-    public void setUp() {
+    void setUp() {
         universite = Universite.builder()
                 .idUniversite(1L)
                 .nomUniversite("Test University")
@@ -36,7 +36,7 @@ public class UniversiteServiceMockTest {
     }
 
     @Test
-    public void testAddOrUpdate() {
+    void testAddOrUpdate() {
         // Arrange: Mock the save method to return the same Universite object
         when(universiteRepository.save(universite)).thenReturn(universite);
 
@@ -49,7 +49,7 @@ public class UniversiteServiceMockTest {
     }
 
     @Test
-    public void testFindById_ExistingId() {
+    void testFindById_ExistingId() {
         // Arrange: Mock the findById method to return the Universite object when the ID is found
         when(universiteRepository.findById(1L)).thenReturn(Optional.of(universite));
 
@@ -61,7 +61,7 @@ public class UniversiteServiceMockTest {
     }
 
     @Test
-    public void testFindById_NonExistingId() {
+    void testFindById_NonExistingId() {
         // Arrange: Mock the findById method to return empty Optional when the ID does not exist
         when(universiteRepository.findById(2L)).thenReturn(Optional.empty());
 
@@ -74,7 +74,7 @@ public class UniversiteServiceMockTest {
     }
 
     @Test
-    public void testDeleteById() {
+    void testDeleteById() {
         // Act: Call the deleteById method
         universiteService.deleteById(1L);
 
@@ -83,7 +83,7 @@ public class UniversiteServiceMockTest {
     }
 
     @Test
-    public void testDelete() {
+    void testDelete() {
         // Act: Call the delete method
         universiteService.delete(universite);
 
