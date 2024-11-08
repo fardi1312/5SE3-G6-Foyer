@@ -1,4 +1,4 @@
-package tn.esprit.spring.ServicesTest.Etudiant;
+package tn.esprit.spring.ServicesTest.Etudiant.Mockitto;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -15,7 +15,7 @@ import java.util.Optional;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
-public class EtudiantServiceTestMockitto {
+public class EtudiantServiceTest {
 
     @Mock
     private EtudiantRepository etudiantRepository;
