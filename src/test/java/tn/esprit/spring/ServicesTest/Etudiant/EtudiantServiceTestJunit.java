@@ -1,4 +1,4 @@
-package tn.esprit.spring.ServicesTest.Etudiant.Junit;
+package tn.esprit.spring.ServicesTest.Etudiant;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -7,7 +7,7 @@ import tn.esprit.spring.Services.Etudiant.EtudiantService;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-public class EtudiantServiceTest {
+public class EtudiantServiceTestJunit {
 
     private EtudiantService etudiantService;
 
