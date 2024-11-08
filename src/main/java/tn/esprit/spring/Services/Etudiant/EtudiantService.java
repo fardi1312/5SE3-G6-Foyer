@@ -10,12 +10,16 @@ import java.util.List;
 @Service
 @AllArgsConstructor
 public class EtudiantService implements IEtudiantService {
-    EtudiantRepository repo;
+    private final EtudiantRepository repo;
 
     @Override
     public Etudiant addOrUpdate(Etudiant e) {
+        if (e == null) {
+            throw new IllegalArgumentException("Etudiant cannot be null");
+        }
         return repo.save(e);
     }
+
 
     @Override
     public List<Etudiant> findAll() {
@@ -24,8 +28,12 @@ public class EtudiantService implements IEtudiantService {
 
     @Override
     public Etudiant findById(long id) {
+        if (id <= 0) {
+            throw new IllegalArgumentException("Id must be positive");
+        }
         return repo.findById(id).orElseThrow(() -> new RuntimeException("Etudiant not found"));
     }
+
 
     @Override
     public void deleteById(long id) {
@@ -34,6 +42,9 @@ public class EtudiantService implements IEtudiantService {
 
     @Override
     public void delete(Etudiant e) {
+        if (e == null) {
+            throw new IllegalArgumentException("Etudiant cannot be null");
+        }
         repo.delete(e);
     }
 }
