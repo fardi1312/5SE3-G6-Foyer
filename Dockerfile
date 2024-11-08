@@ -1,14 +1,13 @@
-# Use an official Java runtime as a parent image
-FROM openjdk:17-jdk-slim
-
-# Set the working directory in the container
+# Étape 1 : Construire l'application avec Maven
+FROM maven:3.8.1-openjdk-17 AS build
 WORKDIR /app
+COPY . .
+RUN mvn clean package
 
-# Copy the Maven build output (jar file) to the container
-COPY target/foyer-0.0.1-SNAPSHOT.jar foyer-app.jar
-
-# Make port 8412 available to the world outside this container
+# Étape 2 : Utiliser une image Java légère pour exécuter l’application
+FROM openjdk:17-jdk-slim
+WORKDIR /app
+# Copier le fichier .jar depuis l'étape de build
+COPY --from=build /app/target/foyer-0.0.1-SNAPSHOT.jar foyer-app.jar
 EXPOSE 8110
-
-# Run the jar file
 ENTRYPOINT ["java", "-jar", "foyer-app.jar"]
