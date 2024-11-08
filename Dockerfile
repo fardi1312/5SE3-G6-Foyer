@@ -1,14 +1,14 @@
+# Utiliser une image Java officielle comme base
+FROM openjdk:17-jdk-slim
 
+# Définir le répertoire de travail dans le conteneur
+WORKDIR /app
 
-# version of java
-FROM adoptopenjdk/openjdk17:alpine-jre
+# Copier le fichier .jar généré par Maven depuis le répertoire target vers le conteneur
+COPY target/Foyer-0.0.1-SNAPSHOT.jar foyer-app.jar
 
-#the artifact path
-ARG artifact=target/spring-boot-web.jar
+# Exposer le port sur lequel votre application Spring Boot écoute
+EXPOSE 8110
 
-WORKDIR /opt/app
-
-COPY ${artifact} app.jar
-
-# This should not be changed
-ENTRYPOINT ["java","-jar","app.jar"]
+# Démarrer l'application
+ENTRYPOINT ["java", "-jar", "foyer-app.jar"]
