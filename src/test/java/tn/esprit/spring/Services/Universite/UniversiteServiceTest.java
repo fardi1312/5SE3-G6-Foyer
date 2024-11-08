@@ -13,6 +13,7 @@ import tn.esprit.spring.DAO.Repositories.UniversiteRepository;
 import static org.junit.jupiter.api.Assertions.*;
 
 import java.util.List;
+import java.util.stream.Stream;
 
 @SpringBootTest
 @Transactional
@@ -40,7 +41,7 @@ class UniversiteServiceTest {
     void testAddOrUpdate() {
         Universite savedUniversite = universiteService.addOrUpdate(universite);
 
-        assertNotNull(savedUniversite.getIdUniversite(), "ID should not be null after save");
+        assertNotEquals(0L, savedUniversite.getIdUniversite(), "ID should not be zero after save");
         assertEquals("Test University", savedUniversite.getNomUniversite(), "University name should match");
     }
 
@@ -83,10 +84,26 @@ class UniversiteServiceTest {
 
     @Test
     void testDelete() {
+        // Create and save a Universite entity
         Universite savedUniversite = universiteService.addOrUpdate(universite);
 
+        // Delete the saved university
         universiteService.delete(savedUniversite);
 
-        assertThrows(EntityNotFoundException.class, () -> universiteService.findById(savedUniversite.getIdUniversite()));
+        // Use stream to check for EntityNotFoundException by streaming the result of findById
+        assertTrue(
+                Stream.of(savedUniversite.getIdUniversite())
+                        .map(id -> {
+                            try {
+                                universiteService.findById(id);
+                                return false; // If no exception, return false
+                            } catch (EntityNotFoundException e) {
+                                return true; // If exception occurs, return true
+                            }
+                        })
+                        .anyMatch(Boolean::booleanValue),
+                "EntityNotFoundException should be thrown after deletion"
+        );
     }
+
 }
