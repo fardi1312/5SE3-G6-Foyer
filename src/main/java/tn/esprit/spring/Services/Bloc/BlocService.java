@@ -1,6 +1,7 @@
 package tn.esprit.spring.Services.Bloc;
 
 import jakarta.persistence.EntityNotFoundException;
+import jakarta.transaction.Transactional;
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
 import tn.esprit.spring.DAO.Entities.Bloc;
@@ -21,26 +22,16 @@ public class BlocService implements IBlocService {
     BlocRepository blocRepository;
     FoyerRepository foyerRepository;
 
-    @Override
-    public Bloc addOrUpdate2(Bloc b) { //Cascade
-        List<Chambre> chambres= b.getChambres();
-        for (Chambre c: chambres) {
-            c.setBloc(b);
-            chambreRepository.save(c);
-        }
-        return b;
+    @Transactional
+    public Bloc addOrUpdate(Bloc bloc) {
+        // Assuming you're modifying the list of chambres inside the bloc entity
+        List<Chambre> chambres = new ArrayList<>(bloc.getChambres());  // Create a copy
+        // Proceed with your logic to update the bloc
+        bloc.setChambres(chambres);
+        return blocRepository.save(bloc);
     }
 
-    @Override
-    public Bloc addOrUpdate(Bloc b) {
-        List<Chambre> chambres= b.getChambres();
-        b= repo.save(b);
-        for (Chambre chambre: chambres) {
-            chambre.setBloc(b);
-            chambreRepository.save(chambre);
-        }
-        return b;
-    }
+
 
     @Override
     public List<Bloc> findAll() {
@@ -49,7 +40,7 @@ public class BlocService implements IBlocService {
 
     @Override
     public Bloc findById(long id) {
-        return repo.findById(id).orElseThrow(() -> new EntityNotFoundException("Bloc with id " + id + " not found"));
+        return repo.findById(id).orElseThrow(() -> new EntityNotFoundException("Bloc not found with id " + id ));
     }
 
     @Override
@@ -75,14 +66,11 @@ public class BlocService implements IBlocService {
             Chambre chambre=chambreRepository.findByNumeroChambre(nu);
             chambres.add(chambre);
         }
-        // Keyword (2ème méthode)
-
-        //2 Parent==>Chambre  Child==> Bloc
         for (Chambre cha : chambres) {
             //3 On affecte le child au parent
-                cha.setBloc(b);
+            cha.setBloc(b);
             //4 save du parent
-                chambreRepository.save(cha);
+            chambreRepository.save(cha);
         }
         return b;
     }
