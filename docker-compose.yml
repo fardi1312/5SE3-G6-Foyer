@@ -25,7 +25,7 @@ services:
       SPRING_DATASOURCE_PASSWORD: motdepasse
       SERVER_PORT: 8087
     ports:
-      - "8111:8087"
+      - "8111:8111"
     depends_on:
       - mysql
     networks:
