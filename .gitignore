@@ -1,26 +1,53 @@
 # Ignore le dossier de compilation
-/target/
+target/
+!.mvn/wrapper/maven-wrapper.jar
+!**/src/main/**/target/
+!**/src/test/**/target/
 
-# Ignore les fichiers de configuration de l'environnement
-*.log
-*.env
-
-# Ignore les fichiers de dépendances de l'IDE
-.vscode/
+# IntelliJ IDEA
 .idea/
+*.iws
 *.iml
-
-# Ignore les fichiers de sauvegarde et temporaires
-*~
-*.tmp
-*.bak
-
-# Ignore les fichiers de compilations générés
-*.class
+*.ipr
+out/
 *.jar
 *.war
-*.zip
+*.ear
+*.class
+*.log
+# Temporary files
+*.tmp
+*.temp
+*.bak
+*.swp
+*.orig
 
-# Ignore les fichiers du système d'exploitation
+# OS generated files
 .DS_Store
 Thumbs.db
+ehthumbs.db
+Icon?
+Desktop.ini
+*.lnk
+# Coverage reports
+coverage/
+*.coverage
+*.coveragerc
+# Miscellaneous
+*.zip
+*.tar.gz
+*.rar
+*.7z
+*.tar
+*.gz
+*.swo
+*.pid
+*.seed
+*.csv
+*.dat
+# JUnit reports
+**/target/surefire-reports/
+**/target/failsafe-reports/
+
+# Maven wrapper
+/.mvn/wrapper/maven-wrapper.properties
