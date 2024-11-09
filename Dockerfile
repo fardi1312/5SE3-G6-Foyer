@@ -5,10 +5,10 @@ FROM openjdk:17-jdk-slim
 WORKDIR /app
 
 # Copy the Maven build output (jar file) to the container
-COPY target/Foyer-2.0.2.jar app.jar
+COPY target/Foyer-2.0.3-SNAPSHOT.jar app.jar
 
 # Make port 8111 available to the world outside this container
 EXPOSE 8111
 
 # Run the jar file
-ENTRYPOINT ["java", "-jar", "Foyer-2.0.2.jar"]
+ENTRYPOINT ["java", "-jar", "app.jar"]
