@@ -8,7 +8,7 @@ WORKDIR /app
 COPY target/Foyer-2.0.3-SNAPSHOT.jar app.jar
 
 # Make port 8111 available to the world outside this container
-EXPOSE 8111
+EXPOSE 8412
 
 # Run the jar file
 ENTRYPOINT ["java", "-jar", "app.jar"]
