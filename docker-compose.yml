@@ -24,7 +24,7 @@ services:
       SPRING_DATASOURCE_USERNAME: utilisateur
       SPRING_DATASOURCE_PASSWORD: motdepasse
     ports:
-      - "8111:8081"
+      - "8111:8087"
     depends_on:
       - mysql
     networks:
