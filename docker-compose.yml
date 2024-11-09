@@ -23,7 +23,6 @@ services:
       SPRING_DATASOURCE_URL: jdbc:mysql://mysql:3306/foyer  # Use 3306 for MySQL inside the container
       SPRING_DATASOURCE_USERNAME: utilisateur
       SPRING_DATASOURCE_PASSWORD: motdepasse
-      SERVER_PORT: 8087
     ports:
       - "8412:8081"
     depends_on:
