@@ -1,34 +1,37 @@
 # Ignore le dossier de compilation
 target/
 !.mvn/wrapper/maven-wrapper.jar
-!**/src/main/**/target/
-!**/src/test/**/target/
 
-# IntelliJ IDEA
-.idea/
+
+### IntelliJ IDEA ###
+.idea
 *.iws
 *.iml
 *.ipr
-out/
-*.jar
-*.war
-*.ear
-*.class
-*.log
 # Temporary files
 *.tmp
 *.temp
 *.bak
 *.swp
 *.orig
-
-# OS generated files
-.DS_Store
-Thumbs.db
-ehthumbs.db
-Icon?
-Desktop.ini
-*.lnk
+### STS ###
+.apt_generated
+.classpath
+.factorypath
+.project
+.settings
+.springBeans
+.sts4-cache
+### NetBeans ###
+/nbproject/private/
+/nbbuild/
+/dist/
+/nbdist/
+/.nb-gradle/
+build/
+!**/src/main/**/build/
+### VS Code ###
+.vscode/
 # Coverage reports
 coverage/
 *.coverage

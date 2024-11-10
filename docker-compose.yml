@@ -1,49 +1,54 @@
 version: '3.8'
+networks:
+  mynetwork:
+    driver: bridge
 
 services:
+  # MySQL database service
   mysql:
-    image: mysql:8.0
-    environment:
-      MYSQL_ROOT_PASSWORD: root
-      MYSQL_DATABASE: foyer
-      MYSQL_USER: utilisateur
-      MYSQL_PASSWORD: motdepasse
-    ports:
-      - "3310:3306"  # Host port mapped to container port
+    image: mysql:latest
     networks:
-      - app-network
-    volumes:
-      - mysql-data:/var/lib/mysql # Persist MySQL data
-
-  spring-app:
-    image: medkhoualdia/foyer:latest # Use 'latest' or set a specific tag
-    build:
-      context: . # This will look for a Dockerfile in the current directory
+      - mynetwork
     environment:
-      SPRING_DATASOURCE_URL: jdbc:mysql://mysql:3306/foyer  # Use 3306 for MySQL inside the container
-      SPRING_DATASOURCE_USERNAME: utilisateur
-      SPRING_DATASOURCE_PASSWORD: motdepasse
-      SERVER_PORT: 8087
+      MYSQL_ROOT_PASSWORD: ""
+      MYSQL_DATABASE: foyer
     ports:
-      - "8111:8087"
+      - "3306:3306"
+    volumes:
+      - mysql-data:/var/lib/mysql
+
+  # Spring Boot application service
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    ports:
+      - "8089:8089"
+    networks:
+      - mynetwork
     depends_on:
       - mysql
-    networks:
-      - app-network
-
+    environment:
+      SPRING_DATASOURCE_URL: jdbc:mysql://mysql:3306/foyer?createDatabaseIfNotExist=true
+      SPRING_DATASOURCE_USERNAME: root
+      SPRING_DATASOURCE_PASSWORD: ""
+      MANAGEMENT_ENDPOINTS_WEB_EXPOSURE_INCLUDE: '*'
+      MANAGEMENT_ENDPOINT_PROMETHEUS_ENABLED: 'true'
+      MANAGEMENT_METRICS_EXPORT_PROMETHEUS_ENABLED: 'true'
+  # PHPMyAdmin service
   phpmyadmin:
     image: phpmyadmin/phpmyadmin
+    networks:
+      - mynetwork
     ports:
-      - "8888:80"  # Change this to your desired port
+      - "80:80"
+    depends_on:
+      - mysql
     environment:
       PMA_HOST: mysql
-      PMA_USER: utilisateur
-      PMA_PASSWORD: motdepasse
-    networks:
-      - app-network
-networks:
-  app-network:
-    driver: bridge
+      PMA_USER: root
+      PMA_PASSWORD: ""
+
 
 volumes:
   mysql-data:
