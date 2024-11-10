@@ -6,7 +6,7 @@ networks:
 services:
   # MySQL database service
   mysql:
-    image: mysql:latest
+    image: mysql:8.0
     networks:
       - mynetwork
     environment:
