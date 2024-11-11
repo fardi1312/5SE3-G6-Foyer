@@ -11,4 +11,4 @@ COPY target/Foyer-2.0.3-SNAPSHOT.jar /app/foyer.jar
 EXPOSE 8111
 
 # Define the command to run your Spring Boot application
-ENTRYPOINT ["java", "-jar", "/app/foyer.jar"]
+ENTRYPOINT ["java", "-jar", "foyer.jar"]
