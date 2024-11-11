@@ -1,54 +1,52 @@
 version: '3.8'
-networks:
-  mynetwork:
-    driver: bridge
 
 services:
-  # MySQL database service
   mysql:
     image: mysql:8.0
-    networks:
-      - mynetwork
     environment:
-      MYSQL_ROOT_PASSWORD: rootpassword
+      MYSQL_ROOT_PASSWORD: root
       MYSQL_DATABASE: foyer
       MYSQL_USER: utilisateur
       MYSQL_PASSWORD: motdepasse
     ports:
-      - "3306:3306"
-    volumes:
-      - mysql-data:/var/lib/mysql
-
-  # Spring Boot application service
-  spring-app:
-    image: medkhoualdia/foyer:latest
-    build:
-      context: .
-    ports:
-      - "8111:8089"
+      - "3310:3306"  # Host port mapped to container port
     networks:
-      - mynetwork
-    depends_on:
-      - mysql
+      - app-network
+    volumes:
+      - mysql-data:/var/lib/mysql  # Persist MySQL data
+
+  spring-app:
+    image: medkhoualdia/foyer:latest  # Use 'latest' or set a specific tag
+    build:
+      context: .  # Looks for Dockerfile in the current directory
     environment:
-      SPRING_DATASOURCE_URL: jdbc:mysql://mysql:3306/foyer?createDatabaseIfNotExist=true
+      SPRING_DATASOURCE_URL: jdbc:mysql://mysql:3306/foyer  # Internal MySQL container connection
       SPRING_DATASOURCE_USERNAME: utilisateur
       SPRING_DATASOURCE_PASSWORD: motdepasse
-
-  # PHPMyAdmin service
-  phpmyadmin:
-    image: phpmyadmin/phpmyadmin
-    networks:
-      - mynetwork
+      MANAGEMENT_ENDPOINTS_WEB_EXPOSURE_INCLUDE: '*'
+      MANAGEMENT_ENDPOINT_PROMETHEUS_ENABLED: 'true'
+      MANAGEMENT_METRICS_EXPORT_PROMETHEUS_ENABLED: 'true'
     ports:
-      - "80:80"
+      - "8111:8087"
     depends_on:
       - mysql
+    networks:
+      - app-network
+
+  phpmyadmin:
+    image: phpmyadmin/phpmyadmin
+    ports:
+      - "8888:80"  # Change to desired host port
     environment:
       PMA_HOST: mysql
       PMA_USER: utilisateur
       PMA_PASSWORD: motdepasse
+    networks:
+      - app-network
 
+networks:
+  app-network:
+    driver: bridge
 
 volumes:
   mysql-data:
