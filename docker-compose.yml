@@ -23,9 +23,13 @@ services:
       SPRING_DATASOURCE_URL: jdbc:mysql://mysql:3306/foyer  # Internal MySQL container connection
       SPRING_DATASOURCE_USERNAME: utilisateur
       SPRING_DATASOURCE_PASSWORD: motdepasse
+      SPRING_JPA_HIBERNATE_DDL_AUTO: update
+      SERVER_PORT: 8087
+      SERVER_SERVLET_CONTEXT_PATH: /Foyer
       MANAGEMENT_ENDPOINTS_WEB_EXPOSURE_INCLUDE: '*'
       MANAGEMENT_ENDPOINT_PROMETHEUS_ENABLED: 'true'
       MANAGEMENT_METRICS_EXPORT_PROMETHEUS_ENABLED: 'true'
+
     ports:
       - "8111:8087"
     depends_on:
