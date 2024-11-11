@@ -10,8 +10,10 @@ services:
     networks:
       - mynetwork
     environment:
-      MYSQL_ROOT_PASSWORD: ""
+      MYSQL_ROOT_PASSWORD: rootpassword
       MYSQL_DATABASE: foyer
+      MYSQL_USER: utilisateur
+      MYSQL_PASSWORD: motdepasse
     ports:
       - "3306:3306"
     volumes:
@@ -19,6 +21,7 @@ services:
 
   # Spring Boot application service
   app:
+    image: medkhoualdia/foyer:latest
     build:
       context: .
       dockerfile: Dockerfile
@@ -30,8 +33,8 @@ services:
       - mysql
     environment:
       SPRING_DATASOURCE_URL: jdbc:mysql://mysql:3306/foyer?createDatabaseIfNotExist=true
-      SPRING_DATASOURCE_USERNAME: root
-      SPRING_DATASOURCE_PASSWORD: ""
+      SPRING_DATASOURCE_USERNAME: utilisateur
+      SPRING_DATASOURCE_PASSWORD: motdepasse
       MANAGEMENT_ENDPOINTS_WEB_EXPOSURE_INCLUDE: '*'
       MANAGEMENT_ENDPOINT_PROMETHEUS_ENABLED: 'true'
       MANAGEMENT_METRICS_EXPORT_PROMETHEUS_ENABLED: 'true'
@@ -46,8 +49,8 @@ services:
       - mysql
     environment:
       PMA_HOST: mysql
-      PMA_USER: root
-      PMA_PASSWORD: ""
+      PMA_USER: utilisateur
+      PMA_PASSWORD: motdepasse
 
 
 volumes:
