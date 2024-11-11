@@ -16,7 +16,7 @@ services:
       - mysql-data:/var/lib/mysql  # Persist MySQL data
 
   spring-app:
-    image: medkhoualdia/foyer:latest  # Use 'latest' or set a specific tag
+    image: medkhoualdia/devops:latest  # Use 'latest' or set a specific tag
     build:
       context: .  # Looks for Dockerfile in the current directory
     environment:
