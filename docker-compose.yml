@@ -1,49 +1,35 @@
-version: '3.8'
+version: "3"
 
 services:
-  mysql:
+  # Service MySQL
+  mysqldb:
+    container_name: mysqldb
     image: mysql:8.0
-    environment:
-      MYSQL_ROOT_PASSWORD: rootpassword
-      MYSQL_DATABASE: foyer
-      MYSQL_USER: utilisateur
-      MYSQL_PASSWORD: motdepasse
+    restart: unless-stopped
     ports:
-      - "3310:3306"  # Host port mapped to container port
-    networks:
-      - app-network
+      - 3306:3306
+    environment:
+      - MYSQL_USER=utilisateur
+      - MYSQL_PASSWORD=motdepasse
+      - MYSQL_ROOT_PASSWORD=rootpassword
+      - MYSQL_DATABASE=foyer
     volumes:
-      - mysql-data:/var/lib/mysql # Persist MySQL data
+      - mysql-data:/var/lib/mysql  # Persistance des données de MySQL
 
-  spring-app:
-    image: nadhirtbini/foyer:latest # Use 'latest' or set a specific tag
-    build:
-      context: . # This will look for a Dockerfile in the current directory
-    environment:
-      SPRING_DATASOURCE_URL: jdbc:mysql://mysql:3306/foyer  # Use 3306 for MySQL inside the container
-      SPRING_DATASOURCE_USERNAME: utilisateur
-      SPRING_DATASOURCE_PASSWORD: motdepasse
+  # Service Application Spring Boot
+  foyer_app:
+    container_name: foyer_app
+    build: .  # Ce contexte recherche un Dockerfile dans le répertoire courant
+    image: nadhirtbini/foyer:latest
+    restart: unless-stopped
     ports:
-      - "8110:8082"  # Map 8110 on host to 8082 in container
+      - 8082:8082  # Mappe le port 8082 de l'hôte au port 8082 du conteneur
+    environment:
+      - SPRING_DATASOURCE_URL=jdbc:mysql://mysqldb:3306/foyer
+      - SPRING_DATASOURCE_USERNAME=utilisateur
+      - SPRING_DATASOURCE_PASSWORD=motdepasse
     depends_on:
-      - mysql
-    networks:
-      - app-network
-
-  phpmyadmin:
-    image: phpmyadmin/phpmyadmin
-    ports:
-      - "8888:80"  # Change this to your desired port
-    environment:
-      PMA_HOST: mysql
-      PMA_USER: utilisateur
-      PMA_PASSWORD: motdepasse
-    networks:
-      - app-network
-
-networks:
-  app-network:
-    driver: bridge
+      - mysqldb
 
 volumes:
   mysql-data:
