@@ -24,7 +24,7 @@ services:
       SPRING_DATASOURCE_USERNAME: utilisateur
       SPRING_DATASOURCE_PASSWORD: motdepasse
     ports:
-      - "8110:8081"
+      - "8110:8082"  # Map 8110 on host to 8082 in container
     depends_on:
       - mysql
     networks:

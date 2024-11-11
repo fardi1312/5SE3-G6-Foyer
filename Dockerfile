@@ -7,8 +7,8 @@ WORKDIR /app
 # Copier le fichier .jar généré par Maven depuis le répertoire target vers le conteneur
 COPY target/Foyer-0.0.1-SNAPSHOT.jar foyer-app.jar
 
-# Exposer le port sur lequel votre application Spring Boot écoute
-EXPOSE 8110
+# Exposer le nouveau port de l'application Spring Boot
+EXPOSE 8082
 
-# Démarrer l'application
-ENTRYPOINT ["java", "-jar", "foyer-app.jar"]
+# Démarrer l'application sur le port 8082
+ENTRYPOINT ["java", "-jar", "foyer-app.jar", "--server.port=8082"]
