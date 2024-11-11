@@ -4,14 +4,14 @@ services:
   # Service MySQL
   mysqldb:
     container_name: mysqldb
-    image: mysql:8.0
+    image: mysql:latest
     restart: unless-stopped
     ports:
       - 3306:3306
     environment:
-      - MYSQL_USER=utilisateur
-      - MYSQL_PASSWORD=motdepasse
-      - MYSQL_ROOT_PASSWORD=rootpassword
+      - MYSQL_USER=
+      - MYSQL_PASSWORD=
+      - MYSQL_ROOT_PASSWORD=
       - MYSQL_DATABASE=foyer
     volumes:
       - mysql-data:/var/lib/mysql  # Persistance des données de MySQL
@@ -26,8 +26,8 @@ services:
       - 8082:8082  # Mappe le port 8082 de l'hôte au port 8082 du conteneur
     environment:
       - SPRING_DATASOURCE_URL=jdbc:mysql://mysqldb:3306/foyer
-      - SPRING_DATASOURCE_USERNAME=utilisateur
-      - SPRING_DATASOURCE_PASSWORD=motdepasse
+      - SPRING_DATASOURCE_USERNAME=
+      - SPRING_DATASOURCE_PASSWORD=
     depends_on:
       - mysqldb
 
