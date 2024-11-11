@@ -9,7 +9,7 @@ services:
       MYSQL_USER: utilisateur
       MYSQL_PASSWORD: motdepasse
     ports:
-      - "3310:3306"  # Host port mapped to container port
+      - "3306:3306"  # Host port mapped to container port
     networks:
       - app-network
     volumes:
