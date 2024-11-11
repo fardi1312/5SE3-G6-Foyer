@@ -7,10 +7,10 @@ WORKDIR /app
 COPY src/main/resources/application.properties /app/application.properties
 
 # Copy the jar file from the Maven target directory to the container
-COPY target/Foyer-2.0.3-SNAPSHOT.jar app.jar
+COPY target/Foyer-2.0.3-SNAPSHOT.jar /app/foyer.jar
 
 # Expose the port your app runs on (adjust if necessary)
 EXPOSE 8111
 
 # Define the command to run your Spring Boot application
-ENTRYPOINT ["java", "-jar", "app.jar","--spring.config.location=classpath:/application.properties"]
+ENTRYPOINT ["java", "-jar", "foyer.jar","--spring.config.location=classpath:/application.properties"]
