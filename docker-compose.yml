@@ -23,7 +23,7 @@ services:
     image: nadhirtbini/foyer:latest
     restart: unless-stopped
     ports:
-      - "7000:7000"  # Mappe le port 8082 de l'hôte au port 8082 du conteneur
+      - "7000:7000"
     environment:
       - DB_HOST=mysqldb
       - DB_PORT=3306
