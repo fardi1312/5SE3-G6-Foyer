@@ -3,6 +3,8 @@ FROM openjdk:17-jdk-slim
 
 # Set the working directory
 WORKDIR /app
+# Copy the application.properties file
+COPY src/main/resources/application.properties /app/application.properties
 
 # Copy the jar file from the Maven target directory to the container
 COPY target/Foyer-2.0.3-SNAPSHOT.jar app.jar
@@ -11,4 +13,4 @@ COPY target/Foyer-2.0.3-SNAPSHOT.jar app.jar
 EXPOSE 8111
 
 # Define the command to run your Spring Boot application
-ENTRYPOINT ["java", "-jar", "Foyer-2.0.3-SNAPSHOT.jar"]
+ENTRYPOINT ["java", "-jar", "app.jar","--spring.config.location=classpath:/application.properties"]
