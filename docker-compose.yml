@@ -10,7 +10,7 @@ services:
     networks:
       - mynetwork
     environment:
-      MYSQL_ROOT_PASSWORD: rootpassword
+      MYSQL_ROOT_PASSWORD: root
       MYSQL_DATABASE: foyer
       MYSQL_USER: utilisateur
       MYSQL_PASSWORD: motdepasse
