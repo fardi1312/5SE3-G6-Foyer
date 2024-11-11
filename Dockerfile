@@ -8,7 +8,7 @@ WORKDIR /app
 COPY target/Foyer-2.0.3-SNAPSHOT.jar /app/Foyer-2.0.3-SNAPSHOT.jar
 
 # Expose the port your app runs on (adjust if necessary)
-EXPOSE 8089
+EXPOSE 8111
 
 # Define the command to run your Spring Boot application
 CMD ["java", "-jar", "Foyer-2.0.3-SNAPSHOT.jar"]

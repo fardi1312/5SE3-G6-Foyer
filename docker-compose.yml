@@ -20,13 +20,12 @@ services:
       - mysql-data:/var/lib/mysql
 
   # Spring Boot application service
-  app:
+  spring-app:
     image: medkhoualdia/foyer:latest
     build:
       context: .
-      dockerfile: Dockerfile
     ports:
-      - "8089:8089"
+      - "8111:8089"
     networks:
       - mynetwork
     depends_on:
@@ -35,9 +34,7 @@ services:
       SPRING_DATASOURCE_URL: jdbc:mysql://mysql:3306/foyer?createDatabaseIfNotExist=true
       SPRING_DATASOURCE_USERNAME: utilisateur
       SPRING_DATASOURCE_PASSWORD: motdepasse
-      MANAGEMENT_ENDPOINTS_WEB_EXPOSURE_INCLUDE: '*'
-      MANAGEMENT_ENDPOINT_PROMETHEUS_ENABLED: 'true'
-      MANAGEMENT_METRICS_EXPORT_PROMETHEUS_ENABLED: 'true'
+
   # PHPMyAdmin service
   phpmyadmin:
     image: phpmyadmin/phpmyadmin
