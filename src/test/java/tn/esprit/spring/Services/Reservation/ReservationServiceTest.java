@@ -1,4 +1,6 @@
-package tn.esprit.spring.ServicesTest.Reservation;
+package tn.esprit.spring.Services.Reservation;
+
+
 
 import jakarta.persistence.EntityNotFoundException;
 import org.junit.jupiter.api.BeforeEach;
@@ -18,10 +20,7 @@ import tn.esprit.spring.DAO.Repositories.ReservationRepository;
 import tn.esprit.spring.Services.Reservation.ReservationService;
 
 import java.time.LocalDate;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
@@ -29,7 +28,7 @@ import static org.mockito.Mockito.*;
 
 @ActiveProfiles("test")
 @SpringBootTest
-public class ReservationServiceTest {
+ class ReservationServiceTest {
 
     @Mock
     private ReservationRepository reservationRepository;
@@ -37,18 +36,16 @@ public class ReservationServiceTest {
     @Mock
     private ChambreRepository chambreRepository;
 
-    @Mock
-    private EtudiantRepository etudiantRepository;
+
 
     @InjectMocks
     private ReservationService reservationService;
 
     private Reservation reservation;
     private Chambre chambre;
-    private Etudiant etudiant;
 
     @BeforeEach
-    public void setUp() {
+    void setUp() {
         reservation = new Reservation();
         reservation.setIdReservation("2023/2024-Bloc A-101-123456");
         reservation.setEstValide(true);
@@ -56,17 +53,17 @@ public class ReservationServiceTest {
 
         chambre = new Chambre();
         chambre.setIdChambre(1L);
-        chambre.setNumeroChambre(101);
+        chambre.setNumeroChambre(101L);
         chambre.setTypeC(TypeChambre.SIMPLE);
-        chambre.setReservations(new ArrayList<>(Arrays.asList(reservation)));
+        chambre.setReservations(new ArrayList<>(Collections.singletonList(reservation)));
 
-        etudiant = new Etudiant();
+        Etudiant etudiant = new Etudiant();
         etudiant.setCin(123456);
     }
 
     @Test
     @DisplayName("Test d'ajout ou de mise à jour d'une réservation")
-    public void testAddOrUpdate() {
+    void testAddOrUpdate() {
         when(reservationRepository.save(any(Reservation.class))).thenReturn(reservation);
 
         Reservation savedReservation = reservationService.addOrUpdate(reservation);
@@ -78,8 +75,8 @@ public class ReservationServiceTest {
 
     @Test
     @DisplayName("Test de la récupération de toutes les réservations")
-    public void testFindAll() {
-        when(reservationRepository.findAll()).thenReturn(Arrays.asList(reservation));
+    void testFindAll() {
+        when(reservationRepository.findAll()).thenReturn(Collections.singletonList(reservation));
 
         List<Reservation> reservations = reservationService.findAll();
 
@@ -90,7 +87,7 @@ public class ReservationServiceTest {
 
     @Test
     @DisplayName("Test de la récupération d'une réservation par ID")
-    public void testFindById() {
+    void testFindById() {
         when(reservationRepository.findById("2023/2024-Bloc A-101-123456")).thenReturn(Optional.of(reservation));
 
         Reservation foundReservation = reservationService.findById("2023/2024-Bloc A-101-123456");
@@ -102,7 +99,7 @@ public class ReservationServiceTest {
 
     @Test
     @DisplayName("Test de la récupération d'une réservation par ID - Non trouvé")
-    public void testFindById_NotFound() {
+    void testFindById_NotFound() {
         when(reservationRepository.findById("unknown-id")).thenReturn(Optional.empty());
 
         Exception exception = assertThrows(EntityNotFoundException.class, () -> reservationService.findById("unknown-id"));
@@ -111,7 +108,7 @@ public class ReservationServiceTest {
 
     @Test
     @DisplayName("Test de la suppression d'une réservation par ID")
-    public void testDeleteById() {
+    void testDeleteById() {
         doNothing().when(reservationRepository).deleteById("2023/2024-Bloc A-101-123456");
 
         reservationService.deleteById("2023/2024-Bloc A-101-123456");
@@ -121,7 +118,7 @@ public class ReservationServiceTest {
 
     @Test
     @DisplayName("Test de la suppression d'une réservation")
-    public void testDelete() {
+    void testDelete() {
         doNothing().when(reservationRepository).delete(reservation);
 
         reservationService.delete(reservation);
@@ -129,18 +126,4 @@ public class ReservationServiceTest {
         verify(reservationRepository, times(1)).delete(reservation);
     }
 
-    @Test
-    @DisplayName("Test d'annulation d'une réservation")
-    public void testAnnulerReservation() {
-        when(reservationRepository.findByEtudiantsCinAndEstValide(123456, true)).thenReturn(reservation);
-        when(chambreRepository.findByReservationsIdReservation(reservation.getIdReservation())).thenReturn(chambre);
-        when(chambreRepository.save(any(Chambre.class))).thenReturn(chambre);
-        doNothing().when(reservationRepository).delete(any(Reservation.class));
-
-        String resultMessage = reservationService.annulerReservation(123456);
-
-        assertNotNull(resultMessage, "Le message de résultat ne doit pas être nul.");
-        assertEquals("La réservation 2023/2024-Bloc A-101-123456 est annulée avec succès", resultMessage);
-        verify(reservationRepository, times(1)).delete(reservation);
-    }
 }

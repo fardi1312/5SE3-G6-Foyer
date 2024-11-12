@@ -1,49 +1,39 @@
 version: '3.8'
 
 services:
-  mysql:
-    image: mysql:8.0
-    environment:
-      MYSQL_ROOT_PASSWORD: rootpassword
-      MYSQL_DATABASE: foyerMassoudFardi
-      MYSQL_USER: utilisateur
-      MYSQL_PASSWORD: motdepasse
+  mysqldb:
+    container_name: mysqldb
+    image: mysql:5.7
+    restart: unless-stopped
     ports:
-      - "3310:3306"  # Host port mapped to container port
-    networks:
-      - app-network
+      - 3306:3306
+    environment:
+      - MYSQL_USER:root
+      - MYSQL_PASSWORD:root
+      - MYSQL_ROOT_PASSWORD=root
+      - MYSQL_DATABASE=foyerDB
     volumes:
-      - mysql-data:/var/lib/mysql # Persist MySQL data
+      - db_vol:/var/lib/mysqldb
 
-  spring-app:
-    image: fardi1312/foyerdokerhub:latest # Use 'latest' or set a specific tag
-    build:
-      context: . # This will look for a Dockerfile in the current directory
-    environment:
-      SPRING_DATASOURCE_URL: jdbc:mysql://mysql:3306/foyerMassoudFardi  # Use 3306 for MySQL inside the container
-      SPRING_DATASOURCE_USERNAME: utilisateur
-      SPRING_DATASOURCE_PASSWORD: motdepasse
+  foyer-app:
+    image: fardi1312/foyerdevops:latest
+    restart: unless-stopped
+    build: ./
     ports:
-      - "8412:8081"
+      - "8111:8111"
     depends_on:
-      - mysql
-    networks:
-      - app-network
-
+      - mysqldb
   phpmyadmin:
-    image: phpmyadmin/phpmyadmin
+    image: phpmyadmin/phpmyadmin:latest
+    container_name: phpmyadmin
+    restart: unless-stopped
     ports:
-      - "8888:80"  # Change this to your desired port
+      - "8880:80"
     environment:
-      PMA_HOST: mysql
-      PMA_USER: utilisateur
-      PMA_PASSWORD: motdepasse
-    networks:
-      - app-network
-
-networks:
-  app-network:
-    driver: bridge
-
+      - PMA_HOST=mysqldb
+      - PMA_USER=root
+      - PMA_PASSWORD=root
+    depends_on:
+      - mysqldb
 volumes:
-  mysql-data:
+  db_vol:

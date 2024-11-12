@@ -1,6 +1,5 @@
 package tn.esprit.spring.DAO.Entities;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.*;
 import lombok.experimental.FieldDefaults;
@@ -26,11 +25,11 @@ public class Bloc implements Serializable {
 
     private long capaciteBloc;
 
+
     @ManyToOne
-    @JsonIgnore
     private Foyer foyer;
 
     @OneToMany(mappedBy = "bloc", fetch = FetchType.EAGER)
-    @JsonIgnore
-    private transient List<Chambre> chambres = new ArrayList<>(); // Made private and transient
+    private List<Chambre> chambres = new ArrayList<>(); // No 'transient' here, initialized to avoid nulls
+
 }
