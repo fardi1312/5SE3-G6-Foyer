@@ -5,7 +5,7 @@ services:
     image: mysql:8.0
     environment:
       MYSQL_ROOT_PASSWORD: root
-      MYSQL_DATABASE: foyer
+      MYSQL_DATABASE: foyerD
       MYSQL_USER: utilisateur
       MYSQL_PASSWORD: motdepasse
     ports:
@@ -20,7 +20,7 @@ services:
     build:
       context: .  # Looks for Dockerfile in the current directory
     environment:
-      SPRING_DATASOURCE_URL: jdbc:mysql://mysql:3306/foyer  # Internal MySQL container connection
+      SPRING_DATASOURCE_URL: jdbc:mysql://mysql:3306/foyerD  # Internal MySQL container connection
       SPRING_DATASOURCE_USERNAME: utilisateur
       SPRING_DATASOURCE_PASSWORD: motdepasse
       SPRING_JPA_HIBERNATE_DDL_AUTO: update
