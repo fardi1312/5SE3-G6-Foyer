@@ -1,38 +1,28 @@
-version: "3"
+version: '3.8'
 
 services:
-  # Service MySQL
   mysqldb:
     container_name: mysqldb
-    image: mysql:latest
+    image: mysql:5.7
     restart: unless-stopped
     ports:
-      - "3306:3306"
+      - 3306:3306
     environment:
-      - MYSQL_USER=utilisateur
-      - MYSQL_PASSWORD=motdepasse
-      - MYSQL_ROOT_PASSWORD=rootpassword
-      - MYSQL_DATABASE=foyer
+      - MYSQL_USER:root
+      - MYSQL_PASSWORD:root
+      - MYSQL_ROOT_PASSWORD=root
+      - MYSQL_DATABASE=foyerDB
     volumes:
-      - mysql-data:/var/lib/mysql  # Persistance des données de MySQL
+      - db_vol:/var/lib/mysqldb
 
-  # Service Application Spring Boot
-  foyer_app:
-    container_name: foyer_app
-    build: .  # Ce contexte recherche un Dockerfile dans le répertoire courant
+  foyer-app:
     image: nadhirtbini/foyer:latest
     restart: unless-stopped
+    build: ./
     ports:
-      - "7010:7000"
-    environment:
-      - DB_HOST=mysqldb
-      - DB_PORT=3306
-      - DB_USER=utilisateur
-      - DB_PASSWORD=motdepasse
-      - SERVER_PORT=7000
-      - CONTEXT_PATH=/Foyer
+      - "8111:8111"
     depends_on:
       - mysqldb
 
 volumes:
-  mysql-data:
+  db_vol:
