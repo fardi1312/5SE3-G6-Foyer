@@ -5,7 +5,7 @@ FROM openjdk:17-jdk-slim
 WORKDIR /app
 
 # Copy the jar file from the Maven target directory to the container
-COPY target/Foyer-2.0.3.jar /app/foyer.jar
+COPY target/Foyer-3.0.0.jar /app/foyer.jar
 
 # Expose the port your app runs on (adjust if necessary)
 EXPOSE 8111
