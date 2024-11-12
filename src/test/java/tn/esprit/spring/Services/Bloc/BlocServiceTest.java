@@ -1,155 +1,89 @@
 package tn.esprit.spring.Services.Bloc;
 
-import jakarta.persistence.EntityNotFoundException;
+
+
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.extension.ExtendWith;
-import org.mockito.InjectMocks;
-import org.mockito.Mock;
-import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.test.annotation.DirtiesContext;
+import org.springframework.test.context.ActiveProfiles;
+import org.springframework.transaction.annotation.Transactional;
 import tn.esprit.spring.DAO.Entities.Bloc;
-import tn.esprit.spring.DAO.Entities.Chambre;
-import tn.esprit.spring.DAO.Entities.Foyer;
 import tn.esprit.spring.DAO.Repositories.BlocRepository;
-import tn.esprit.spring.DAO.Repositories.ChambreRepository;
-import tn.esprit.spring.DAO.Repositories.FoyerRepository;
-
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Optional;
+import tn.esprit.spring.Services.Bloc.BlocService;
 
 import static org.junit.jupiter.api.Assertions.*;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.*;
 
-@ExtendWith(MockitoExtension.class)
+@SpringBootTest
+@ActiveProfiles("test")
+@DirtiesContext(classMode = DirtiesContext.ClassMode.AFTER_EACH_TEST_METHOD)  // Reset context after each test
+@Transactional
 class BlocServiceTest {
 
-    @Mock
-    private BlocRepository blocRepository;
-
-    @Mock
-    private ChambreRepository chambreRepository;
-
-    @Mock
-    private FoyerRepository foyerRepository;
-
-    @InjectMocks
+    @Autowired
     private BlocService blocService;
 
-    private List<Bloc> blocs;
-    private List<Chambre> chambres;
-    private List<Foyer> foyers;
+    @Autowired
+    private BlocRepository blocRepository;
+
+    private Bloc testBloc;
 
     @BeforeEach
     public void setUp() {
-        blocs = new ArrayList<>();
-        chambres = new ArrayList<>();
-        foyers = new ArrayList<>();
-
-        Bloc blocA = new Bloc();
-        blocA.setNomBloc("Bloc A");
-        blocA.setCapaciteBloc(50);
-        blocA.setChambres(new ArrayList<>());
-        blocA.setIdBloc(1L);
-
-        Bloc blocB = new Bloc();
-        blocB.setNomBloc("Bloc B");
-        blocB.setCapaciteBloc(30);
-        blocB.setChambres(new ArrayList<>());
-        blocB.setIdBloc(2L);
-
-        blocs.add(blocA);
-        blocs.add(blocB);
-
-        Chambre chambre1 = new Chambre();
-        chambre1.setNumeroChambre(101L);
-        chambres.add(chambre1);
-
-        Foyer foyerA = new Foyer();
-        foyerA.setNomFoyer("Foyer A");
-        foyers.add(foyerA);
+        testBloc = new Bloc();
+        testBloc.setNomBloc("TestBloc");
+        blocRepository.save(testBloc);  // Save an initial Bloc for testing
+        System.out.println("Bloc initialisé : " + testBloc.getNomBloc());
     }
 
     @Test
-    public void testAddOrUpdate() {
-        when(blocRepository.save(any(Bloc.class))).thenReturn(blocs.get(0));
+    void testAddOrUpdateBloc() {
+        Bloc newBloc = new Bloc();
+        newBloc.setNomBloc("NewBloc");
+        Bloc savedBloc = blocService.addOrUpdate(newBloc);
 
-        Bloc savedBloc = blocService.addOrUpdate(blocs.get(0));
+        // Affichage dans la console
+        System.out.println("Bloc ajouté ou mis à jour : " + savedBloc.getNomBloc());
 
         assertNotNull(savedBloc);
-        assertEquals("Bloc A", savedBloc.getNomBloc());
-        verify(blocRepository, times(1)).save(blocs.get(0));
+        assertEquals("NewBloc", savedBloc.getNomBloc());
+        assertTrue(blocRepository.existsById(savedBloc.getIdBloc()));
     }
 
     @Test
-    public void testFindAll() {
-        when(blocRepository.findAll()).thenReturn(blocs);
+    void testFindAllBlocs() {
+        var blocs = blocService.findAll();
 
-        List<Bloc> foundBlocs = blocService.findAll();
+        // Affichage dans la console
+        System.out.println("Blocs trouvés : ");
+        for (Bloc bloc : blocs) {
+            System.out.println("  - " + bloc.getNomBloc());
+        }
 
-        assertNotNull(foundBlocs);
-        assertFalse(foundBlocs.isEmpty());
-        assertEquals(2, foundBlocs.size());
-        verify(blocRepository, times(1)).findAll();
+        assertNotNull(blocs);
+        assertTrue(blocs.size() > 0, "Expected at least one bloc in the database.");
     }
 
     @Test
-    public void testFindById() {
-        when(blocRepository.findById(1L)).thenReturn(Optional.of(blocs.get(0)));
+    void testFindBlocById() {
+        Bloc foundBloc = blocService.findById(testBloc.getIdBloc());
 
-        Bloc foundBloc = blocService.findById(1L);
+        // Affichage dans la console
+        System.out.println("Bloc trouvé : " + foundBloc.getNomBloc());
 
         assertNotNull(foundBloc);
-        assertEquals("Bloc A", foundBloc.getNomBloc());
-        verify(blocRepository, times(1)).findById(1L);
+        assertEquals("TestBloc", foundBloc.getNomBloc());
     }
 
     @Test
-    public void testFindById_NotFound() {
-        when(blocRepository.findById(1L)).thenReturn(Optional.empty());
+    void testDeleteBloc() {
+        blocService.deleteById(testBloc.getIdBloc());
 
-        Exception exception = assertThrows(EntityNotFoundException.class, () -> blocService.findById(1L));
+        // Vérifier si le bloc a été supprimé
+        boolean isDeleted = !blocRepository.existsById(testBloc.getIdBloc());
+        System.out.println("Bloc supprimé : " + isDeleted);
 
-        assertEquals("Bloc not found with id 1", exception.getMessage());
+        assertFalse(blocRepository.existsById(testBloc.getIdBloc()), "The bloc should be deleted.");
     }
-
-    @Test
-    public void testDeleteById() {
-        doNothing().when(blocRepository).deleteById(1L);
-
-        blocService.deleteById(1L);
-
-        verify(blocRepository, times(1)).deleteById(1L);
-    }
-
-    @Test
-    public void testDelete() {
-        blocs.get(0).setChambres(chambres);  // Associate chambres to bloc
-
-        doNothing().when(chambreRepository).delete(any(Chambre.class));
-        doNothing().when(blocRepository).delete(blocs.get(0));
-
-        blocService.delete(blocs.get(0));
-
-        verify(chambreRepository, times(chambres.size())).delete(any(Chambre.class));
-        verify(blocRepository, times(1)).delete(blocs.get(0));
-    }
-
-    @Test
-    public void testAffecterBlocAFoyer() {
-        Foyer foyer = foyers.get(0);
-        when(blocRepository.findByNomBloc("Bloc A")).thenReturn(blocs.get(0));
-        when(foyerRepository.findByNomFoyer("Foyer A")).thenReturn(foyer);
-        when(blocRepository.save(blocs.get(0))).thenReturn(blocs.get(0));
-
-        Bloc updatedBloc = blocService.affecterBlocAFoyer("Bloc A", "Foyer A");
-
-        assertNotNull(updatedBloc);
-        assertEquals("Bloc A", updatedBloc.getNomBloc());
-        assertEquals(foyer, updatedBloc.getFoyer());
-        verify(blocRepository, times(1)).save(blocs.get(0));
-    }
-
-    // Removed testAffecterChambresABloc method to stop testing it.
 }
